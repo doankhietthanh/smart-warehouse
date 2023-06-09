@@ -9,6 +9,7 @@ import {
 } from "./stores/auth/authSlice";
 import { signInWithCredential } from "firebase/auth";
 import { auth, GoogleAuthProvider } from "./services/firebase";
+import Vehicle from "./containers/Vehicle";
 
 function App() {
   const tokenStore = localStorage.getItem("token");
@@ -51,6 +52,10 @@ function App() {
       <Switch>
         <Route exact path="/">
           <Login />
+        </Route>
+
+        <Route exact path="/vehicle">
+          <Vehicle />
         </Route>
 
         <Route path="/v1">
