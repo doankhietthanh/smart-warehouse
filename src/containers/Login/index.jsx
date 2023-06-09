@@ -65,7 +65,7 @@ const Login = () => {
 
   return (
     <div className="w-full h-screen flex flex-col gap-16 justify-center items-center bg-cover bg-[url('https://images.pexels.com/photos/114979/pexels-photo-114979.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500')]">
-      <h1 className="text-white font-mono">
+      <h1 className="text-white text-5xl">
         Welcome to Smart Warehouse workplace
       </h1>
       <Button
