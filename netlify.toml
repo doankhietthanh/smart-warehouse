@@ -1,0 +1,29 @@
+[build]
+    command = "yarn build"
+    publish = "dist"
+    base = "/"
+
+[[redirects]]
+    from = "/"
+    to = "/v1/home"
+    status = 200
+
+[[redirects]]
+    from = "/"
+    to = "/v1/dashboard"
+    status = 200
+
+[[redirects]]
+    from = "/"
+    to = "/v1/settings"
+    status = 200
+
+[[redirects]]
+    from = "/"
+    to = "/v1/profile"
+    status = 200
+
+[[redirects]]
+    from = "/"
+    to = "/vehicle"
+    status = 200
