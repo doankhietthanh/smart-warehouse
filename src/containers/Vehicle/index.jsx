@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
-
-import QRCode from "react-qr-code";
+import { Button, Checkbox, Form, Input, QRCode } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const Vehicle = () => {
   const [qrcode, setQrcode] = useState("");
@@ -12,15 +11,34 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     console.log("Success:", values);
-    setQrcode(values.vehicleNumber);
+    setQrcode(values);
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
+  const downloadQRCode = () => {
+    const canvas = document
+      .getElementById("vehicle-qrcode")
+      ?.querySelector("canvas");
+
+    console.log(canvas);
+
+    if (canvas) {
+      const url = canvas.toDataURL();
+      const a = document.createElement("a");
+
+      a.download = `${qrcode.vehicleNumber?.toUpperCase() ?? "QRCode"}.png`;
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
+
   return (
     <div className="w-full h-screen flex justify-center items-center bg-gradient-to-r from-purple-500 to-pink-500">
-      <div className="bg-white bg-opacity-80 w-[400px] h-auto rounded-xl flex flex-col items-center p-5 gap-10">
+      <div className="bg-white bg-opacity-80 w-[400px] h-auto rounded-xl flex flex-col items-center p-5 gap-5">
         <h2 className="text-2xl font-medium">Register vehicle</h2>
         <Form
           className="flex flex-col gap-2 w-full"
@@ -42,6 +60,20 @@ const Vehicle = () => {
           autoComplete="off"
         >
           <Form.Item
+            label="Number"
+            name="vehicleNumber"
+            placeholder="Vehicle number"
+            rules={[
+              {
+                required: true,
+                message: "Please input your vehicle number!",
+              },
+            ]}
+          >
+            <Input placeholder="Vehicle number" />
+          </Form.Item>
+
+          <Form.Item
             label="Username"
             name="username"
             rules={[
@@ -55,17 +87,16 @@ const Vehicle = () => {
           </Form.Item>
 
           <Form.Item
-            label="Number"
-            name="vehicleNumber"
-            placeholder="Vehicle number"
+            label="Email"
+            name="mail"
             rules={[
               {
                 required: true,
-                message: "Please input your vehicle number!",
+                message: "Please input your email!",
               },
             ]}
           >
-            <Input placeholder="Vehicle number" />
+            <Input placeholder="Email" type="email" />
           </Form.Item>
 
           <Form.Item
@@ -92,14 +123,19 @@ const Vehicle = () => {
         </Form>
         {qrcode ? (
           <div className="w-full h-full p-5 flex justify-center items-center">
-            <QRCode
-              size={256}
-              style={{ height: "200px", maxWidth: "100%", width: "100%" }}
-              value={qrcode}
-              viewBox={`0 0 100 100`}
-            />
+            <div
+              id="vehicle-qrcode"
+              className="flex justify-center items-center gap-2"
+            >
+              <QRCode value={qrcode} style={{ marginBottom: 16 }} />
+            </div>
+            <Button type="text" onClick={downloadQRCode}>
+              <DownloadOutlined style={{ fontSize: "24px" }} />
+            </Button>
           </div>
-        ) : null}
+        ) : (
+          <QRCode value="https://ant.design/" status="loading" />
+        )}
       </div>
     </div>
   );

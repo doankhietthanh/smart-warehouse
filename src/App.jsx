@@ -39,11 +39,12 @@ function App() {
         .catch((error) => {
           const errorMessage = error.message;
           console.log(errorMessage);
-          // ...
+          localStorage.removeItem("token");
         });
     } catch (e) {
       console.log(e);
       dispatch(signInWithGoogleFailure(e.message));
+      localStorage.removeItem("token");
     }
   };
 

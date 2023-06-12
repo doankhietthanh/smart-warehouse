@@ -52,7 +52,7 @@ const Navbar = () => {
         <div className="flex justify-center items-center gap-2 cursor-pointer">
           <Avatar
             size={40}
-            className="bg-[#4ABF78] flex justify-center items-center"
+            className="bg-[#a855f7] flex justify-center items-center"
             src={user?.photoURL}
           >
             <UserOutlined className="flex justify-center items-center" />

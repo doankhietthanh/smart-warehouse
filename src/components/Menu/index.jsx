@@ -45,7 +45,7 @@ const Menu = () => {
               <div className="">
                 <div
                   className={`font-extralight ${
-                    selected === index ? "text-[#4ABF78]" : "text-gray-700"
+                    selected === index ? "text-[#a855f7]" : "text-gray-700"
                   } `}
                 >
                   <div className="">{item.name}</div>
