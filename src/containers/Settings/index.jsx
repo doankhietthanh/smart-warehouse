@@ -1,7 +1,20 @@
 import React, { useState } from "react";
 import { Button, InputNumber, Slider } from "antd";
-import { storage, doc, setDoc } from "../../services/firebase";
+import {
+  storage,
+  doc,
+  setDoc,
+  database,
+  ref,
+  set,
+} from "../../services/firebase";
 import { notification } from "antd";
+
+const actionsDB = {
+  noAction: 0,
+  temperatureThreshold: 1,
+  humidityThreshold: 2,
+};
 
 const marksTemperature = {
   0: "0°C",
@@ -33,6 +46,80 @@ const Settings = () => {
 
   const onAfterChangeHumidity = (value) => {
     setHumidity(value);
+  };
+
+  const updateTemperatureThreshold = () => {
+    set(ref(database, "action"), actionsDB.temperatureThreshold)
+      .then(() => {
+        notification.success({
+          message: "Success",
+          description: `Set action temperature updated scuccessfully`,
+          duration: 3,
+        });
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Error",
+          description: `Set action temperature updated failed`,
+          duration: 3,
+        });
+      });
+
+    set(ref(database, "threshold"), {
+      min: temperature[0],
+      max: temperature[1],
+    })
+      .then(() => {
+        notification.success({
+          message: "Success",
+          description: `Temperature threshold updated scuccessfully`,
+          duration: 3,
+        });
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Error",
+          description: `Temperature threshold updated  failed`,
+          duration: 3,
+        });
+      });
+  };
+
+  const updateHumidityThreshold = () => {
+    set(ref(database, "action"), actionsDB.humidityThreshold)
+      .then(() => {
+        notification.success({
+          message: "Success",
+          description: `Set action humidity updated scuccessfully`,
+          duration: 3,
+        });
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Error",
+          description: `Set action humidity updated failed`,
+          duration: 3,
+        });
+      });
+
+    set(ref(database, "threshold"), {
+      min: humidity[0],
+      max: humidity[1],
+    })
+      .then(() => {
+        notification.success({
+          message: "Success",
+          description: `Humidity threshold updated scuccessfully`,
+          duration: 3,
+        });
+      })
+      .catch((error) => {
+        notification.error({
+          message: "Error",
+          description: `Humidity threshold updated  failed`,
+          duration: 3,
+        });
+      });
   };
 
   const updateSettingSensors = () => {
@@ -110,6 +197,11 @@ const Settings = () => {
                 }}
               />
             </div>
+            <div className="flex flex-col justify-center items-center p-10">
+              <Button type="primary" onClick={updateTemperatureThreshold}>
+                Save
+              </Button>
+            </div>
           </div>
         </div>
         <div className="w-full h-auto flex flex-col justify-center items-center p-10">
@@ -146,12 +238,12 @@ const Settings = () => {
                 }}
               />
             </div>
+            <div className="flex flex-col justify-center items-center p-10">
+              <Button type="primary" onClick={updateHumidityThreshold}>
+                Save
+              </Button>
+            </div>
           </div>
-        </div>
-        <div className="w-full h-auto flex flex-col justify-center items-center p-10">
-          <Button type="primary" onClick={updateSettingSensors}>
-            Save
-          </Button>
         </div>
       </div>
       <div className="flex-1 w-full h-full"></div>
