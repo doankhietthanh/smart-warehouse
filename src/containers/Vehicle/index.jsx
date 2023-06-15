@@ -118,7 +118,7 @@ const Vehicle = () => {
 
           <Form.Item
             label="Email"
-            name="mail"
+            name="email"
             rules={[
               {
                 required: true,
@@ -132,7 +132,7 @@ const Vehicle = () => {
           <Form.Item
             name="international"
             valuePropName="checked"
-            defaultValue={false}
+            initialValue={false}
             wrapperCol={{
               offset: 8,
               span: 16,

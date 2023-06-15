@@ -7,7 +7,15 @@ import {
   signOut,
 } from "firebase/auth";
 import { getDatabase, onValue, ref, set } from "firebase/database";
-import { getFirestore, doc, setDoc, Timestamp } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  collection,
+  Timestamp,
+} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -32,4 +40,4 @@ const googleProvider = new GoogleAuthProvider();
 
 export { auth, googleProvider, GoogleAuthProvider, signInWithPopup, signOut };
 export { database, onValue, ref, set };
-export { storage, doc, setDoc, Timestamp };
+export { storage, doc, setDoc, getDoc, getDocs, collection, Timestamp };
