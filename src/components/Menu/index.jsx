@@ -15,8 +15,8 @@ const menu_items = [
     path: "/v1/settings",
   },
   {
-    name: "Profile",
-    path: "/v1/profile",
+    name: "Alert",
+    path: "/v1/alert",
   },
 ];
 

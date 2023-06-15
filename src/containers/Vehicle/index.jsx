@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Form, Input, QRCode } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
+import { storage, doc, setDoc } from "../../services/firebase";
+import { notification } from "antd";
 
 const Vehicle = () => {
   const [qrcode, setQrcode] = useState("");
@@ -11,10 +13,40 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     console.log("Success:", values);
-    setQrcode(values);
+    updateVehicleToStorage(values);
+    setQrcode(values.vehicleNumber);
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+
+  const updateVehicleToStorage = (vehicle) => {
+    try {
+      setDoc(doc(storage, "vehicles", vehicle.vehicleNumber), vehicle)
+        .then(() => {
+          console.log("Document successfully written!");
+          notification.success({
+            message: "Success",
+            description: `Vehicle ${vehicle.vehicleNumber} created`,
+            duration: 3,
+          });
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+          notification.error({
+            message: "Error",
+            description: `Vehicle ${vehicle.vehicleNumber} created failed`,
+            duration: 3,
+          });
+        });
+    } catch (e) {
+      console.log(e);
+      notification.error({
+        message: "Error",
+        description: `Vehicle ${vehicle.vehicleNumber} created failed`,
+        duration: 3,
+      });
+    }
   };
 
   const downloadQRCode = () => {
@@ -22,13 +54,11 @@ const Vehicle = () => {
       .getElementById("vehicle-qrcode")
       ?.querySelector("canvas");
 
-    console.log(canvas);
-
     if (canvas) {
       const url = canvas.toDataURL();
       const a = document.createElement("a");
 
-      a.download = `${qrcode.vehicleNumber?.toUpperCase() ?? "QRCode"}.png`;
+      a.download = `${qrcode?.toUpperCase() ?? "QRCode"}.png`;
       a.href = url;
       document.body.appendChild(a);
       a.click();
@@ -102,6 +132,7 @@ const Vehicle = () => {
           <Form.Item
             name="international"
             valuePropName="checked"
+            defaultValue={false}
             wrapperCol={{
               offset: 8,
               span: 16,
@@ -134,7 +165,7 @@ const Vehicle = () => {
             </Button>
           </div>
         ) : (
-          <QRCode value="https://ant.design/" status="loading" />
+          <QRCode value="" status="loading" />
         )}
       </div>
     </div>

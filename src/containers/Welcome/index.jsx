@@ -40,56 +40,109 @@ const data = [
 ];
 
 const Welcome = () => {
-  const [readerQr, setReaderQr] = useState(null);
-  const [base64Image, setBase64Image] = useState(null);
+  const [readerQrCheckin, setReaderQrCheckin] = useState(null);
+  const [readerQrCheckout, setReaderQrCheckout] = useState(null);
+
+  const [imgCheckin, setImgCheckin] = useState(null);
+  const [imgCheckout, setImgCheckout] = useState(null);
   const [verified, setVerified] = useState(true);
 
   useEffect(() => {
-    getImageFromDB();
-  }, [base64Image]);
+    getImageCheckinFromDB();
 
-  useEffect(() => {
-    readQRFromImage(base64Image);
-  }, [readerQr, base64Image]);
-
-  const readQRFromImage = (base64Image) => {
-    // Create a new Image object
-    const image = new Image();
-    image.src = base64Image;
-
-    // Wait for the image to load
-    image.onload = () => {
-      // Create a canvas element
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      // Set the canvas size to the image size
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      // Draw the image on the canvas
-      context.drawImage(image, 0, 0);
-
-      // Get the image data from the canvas
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-      // Decode the QR code from the image data
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-      // Handle the decoded QR code
-      if (code) {
-        console.log("QR code:", code.data);
-        setReaderQr(code.data);
-      } else {
-        console.log("No QR code found");
+    const loadImageCheckin = async () => {
+      try {
+        const result = await readQRFromImage(imgCheckin);
+        setReaderQrCheckin(result);
+      } catch (error) {
+        console.error(error);
       }
     };
+
+    loadImageCheckin();
+  }, [imgCheckin]);
+
+  useEffect(() => {
+    getImageCheckoutFromDB();
+
+    const loadImageCheckout = async () => {
+      try {
+        const result = await readQRFromImage(imgCheckout);
+        setReaderQrCheckout(result);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadImageCheckout();
+  }, [imgCheckout]);
+
+  const readQRFromImage = async (base64Image) => {
+    return new Promise((resolve, reject) => {
+      // Create a new Image object
+      const image = new Image();
+      image.src = base64Image;
+
+      // Wait for the image to load
+      image.onload = async () => {
+        try {
+          // Create a canvas element
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          // Set the canvas size to the image size
+          canvas.width = image.width;
+          canvas.height = image.height;
+
+          // Draw the image on the canvas
+          context.drawImage(image, 0, 0);
+
+          // Get the image data from the canvas
+          const imageData = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          // Decode the QR code from the image data
+          const code = await jsQR(
+            imageData.data,
+            imageData.width,
+            imageData.height
+          );
+
+          // Handle the decoded QR code
+          if (code) {
+            console.log("QR code:", code.data);
+            resolve(code.data);
+          } else {
+            console.log("No QR code found");
+            resolve(null);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      // Handle image load error
+      image.onerror = (error) => {
+        reject(error);
+      };
+    });
   };
 
-  const getImageFromDB = () => {
-    onValue(ref(database, "camera/"), (snapshot) => {
+  const getImageCheckinFromDB = () => {
+    onValue(ref(database, "checkin/camera/"), (snapshot) => {
       const data = snapshot.val();
-      setBase64Image(data);
+      setImgCheckin(data);
+    });
+  };
+
+  const getImageCheckoutFromDB = () => {
+    onValue(ref(database, "checkout/camera/"), (snapshot) => {
+      const data = snapshot.val();
+      setImgCheckout(data);
     });
   };
 
@@ -101,10 +154,10 @@ const Welcome = () => {
       <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
         <div className="flex-1 flex flex-col justify-center items-center gap-5">
           <div className=" font-bold text-2xl">Check in</div>
-          <ImageAntd src={base64Image} width={500} height={500} />
+          <ImageAntd src={imgCheckin} width={500} height={500} />
           <div>
             <span>Vehicle number: </span>
-            <span className="text-2xl font-bold">{readerQr}</span>
+            <span className="text-2xl font-bold">{readerQrCheckin}</span>
           </div>
         </div>
 
@@ -134,10 +187,10 @@ const Welcome = () => {
       <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
         <div className="flex-1 flex flex-col justify-center items-center gap-5">
           <div className=" font-bold text-2xl">Check out</div>
-          <ImageAntd src={base64Image} width={500} height={500} />
+          <ImageAntd src={imgCheckout} width={500} height={500} />
           <div>
             <span>Vehicle number: </span>
-            <span className="text-2xl font-bold">{readerQr}</span>
+            <span className="text-2xl font-bold">{readerQrCheckout}</span>
           </div>
         </div>
 

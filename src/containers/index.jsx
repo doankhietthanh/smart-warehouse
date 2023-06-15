@@ -3,6 +3,6 @@ import Home from "./Home";
 import Welcome from "./Welcome";
 import Dashboard from "./Dashboard";
 import Settings from "./Settings";
-import Profile from "./Profile";
+import Alert from "./Alert";
 
-export { Welcome, Login, Home, Dashboard, Settings, Profile };
+export { Welcome, Login, Home, Dashboard, Settings, Alert };

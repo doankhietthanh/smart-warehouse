@@ -1,7 +1,7 @@
 import React from "react";
 import PrivateRoute from "../../components/PrivateRouter";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
-import { Welcome, Dashboard, Profile, Settings } from "..";
+import { Welcome, Dashboard, Alert, Settings } from "..";
 import Navbar from "../../components/Navbar";
 
 const Home = () => {
@@ -22,8 +22,8 @@ const Home = () => {
             <Settings />
           </PrivateRoute>
 
-          <PrivateRoute path={"/v1/profile"}>
-            <Profile />
+          <PrivateRoute path={"/v1/alert"}>
+            <Alert />
           </PrivateRoute>
         </Switch>
       </div>

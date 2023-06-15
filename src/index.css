@@ -3,4 +3,8 @@
 @tailwind utilities;
 
 body {
-    font-family: 'Poppins', sans-serif;}
+    font-family: "Poppins", sans-serif;
+}
+#components-slider-demo-mark .ant-slider-with-marks {
+    margin-bottom: 44px;
+}
