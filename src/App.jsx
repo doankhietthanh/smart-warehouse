@@ -40,6 +40,7 @@ function App() {
           const errorMessage = error.message;
           console.log(errorMessage);
           localStorage.removeItem("token");
+          window.location.reload();
         });
     } catch (e) {
       console.log(e);

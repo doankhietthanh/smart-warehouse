@@ -67,7 +67,7 @@ const VehicleList = () => {
 
   const showDeleteConfirm = (record) => {
     confirm({
-      title: 'Are you sure delete this task?',
+      title: 'Are you sure delete this vehicle?',
       icon: <ExclamationCircleFilled />,
       content: 'Some descriptions',
       okText: 'Yes',

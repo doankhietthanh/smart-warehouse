@@ -6,6 +6,7 @@ import { notification } from "antd";
 
 const Vehicle = () => {
   const [qrcode, setQrcode] = useState("");
+  const [isInternational, setIsInternational] = useState(false);
 
   useEffect(() => {
     setQrcode(qrcode);
@@ -13,7 +14,10 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     console.log("Success:", values);
-    updateVehicleToStorage(values);
+    updateVehicleToStorage({
+      ...values,
+      vehicleNumber: isInternational ? `INA${values.vehicleNumber}` : `VN${values.vehicleNumber}`,
+    });
     setQrcode(values.vehicleNumber);
   };
   const onFinishFailed = (errorInfo) => {
@@ -89,6 +93,20 @@ const Vehicle = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
+         <Form.Item
+            name="international"
+            valuePropName="checked"
+            initialValue={false}
+            wrapperCol={{
+              offset: 8,
+              span: 16,
+            }}
+          >
+            <Checkbox onChange={(e) => {
+              setIsInternational(e.target.checked)
+            }}>International</Checkbox>
+          </Form.Item>
+
           <Form.Item
             label="Number"
             name="vehicleNumber"
@@ -100,7 +118,7 @@ const Vehicle = () => {
               },
             ]}
           >
-            <Input placeholder="Vehicle number" />
+            <Input  addonBefore={isInternational ? "INA" : "VN"} placeholder="Vehicle number" />
           </Form.Item>
 
           <Form.Item
@@ -129,17 +147,7 @@ const Vehicle = () => {
             <Input placeholder="Email" type="email" />
           </Form.Item>
 
-          <Form.Item
-            name="international"
-            valuePropName="checked"
-            initialValue={false}
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Checkbox>International</Checkbox>
-          </Form.Item>
+         
 
           <Form.Item
             wrapperCol={{

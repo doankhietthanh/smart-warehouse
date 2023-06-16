@@ -73,6 +73,17 @@ const EditVehicle = (props) => {
       autoComplete="off"
     >
       <Form.Item
+        name="international"
+        valuePropName="checked"
+        wrapperCol={{
+          offset: 8,
+          span: 16,
+        }}
+      >
+        <Checkbox disabled >International</Checkbox>
+      </Form.Item>
+
+      <Form.Item
         label="Number"
         name="vehicleNumber"
 
@@ -84,6 +95,7 @@ const EditVehicle = (props) => {
         ]}
       >
         <Input
+          disabled
           placeholder="Vehicle number"
         />
       </Form.Item>
@@ -116,16 +128,7 @@ const EditVehicle = (props) => {
         <Input placeholder="Email" type="email" />
       </Form.Item>
 
-      <Form.Item
-        name="international"
-        valuePropName="checked"
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Checkbox>International</Checkbox>
-      </Form.Item>
+    
       <Form.Item
             wrapperCol={{
               offset: 8,

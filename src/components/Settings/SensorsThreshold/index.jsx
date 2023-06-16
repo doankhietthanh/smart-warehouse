@@ -168,6 +168,7 @@ const SensorsThreshold = () => {
           range
           marks={marksTemperature}
           onAfterChange={onAfterChangeTemperature}
+          onChange={onAfterChangeTemperature}
           value={temperature}
         />
         <div className="w-full h-auto flex gap-10 justify-center items-center">
@@ -209,6 +210,7 @@ const SensorsThreshold = () => {
           range
           marks={marksHumidity}
           onAfterChange={onAfterChangeHumidity}
+          onChange={onAfterChangeHumidity}
           value={humidity}
         />
         <div className="w-full h-auto flex gap-10 justify-center items-center">
