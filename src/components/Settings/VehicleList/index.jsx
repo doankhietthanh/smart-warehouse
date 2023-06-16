@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { SearchOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import { Button, Input, Space, Table, Modal } from "antd";
+import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import {
@@ -10,22 +11,21 @@ import {
   collection,
   getDoc,
   getDocs,
+  updateDoc,
+  deleteField,
+  deleteDoc,
 } from "../../../services/firebase";
+import { notification } from "antd";
+import EditVehicle from "./EditVehicle";
 
-const data = [
-  {
-    vehicleNumber: "29A-12345",
-    username: "John Brown",
-    email: "admin@gmail.com",
-    international: <Checkbox checked={true} disabled={true} />,
-  },
-];
+const { confirm } = Modal;
 
 const VehicleList = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-
+  const [openModal, setOpenModal] = useState(false);
+  const [vehicleSelected, setVehicelSelected] = useState({});
   const [vehicles, setVehicles] = useState([]);
 
   useEffect(() => {
@@ -34,7 +34,14 @@ const VehicleList = () => {
         const vehiclesRef = collection(storage, "vehicles");
         const vehiclesSnapshot = await getDocs(vehiclesRef);
         const vehiclesList = vehiclesSnapshot.docs.map((doc) => {
-          return { ...doc.data(), key: doc.id };
+          const internationalValue = doc.data().international;
+          return {
+            ...doc.data(),
+            internationalCheckbox: (
+              <Checkbox checked={internationalValue} disabled={true} />
+            ),
+            key: doc.id,
+          };
         });
         setVehicles(vehiclesList);
       } catch (e) {
@@ -42,7 +49,65 @@ const VehicleList = () => {
       }
     };
     getVehicles();
-  }, []);
+  }, [vehicles]);
+
+  const showModal = (record) => {
+    // console.log(record);
+    setOpenModal(true);
+    setVehicelSelected(record);
+  };
+
+  const hanlderCancleModal = () => {
+    setOpenModal(false);
+  };
+
+  const hanlderOKModal = () => {
+    setOpenModal(false);
+  };
+
+  const showDeleteConfirm = (record) => {
+    confirm({
+      title: 'Are you sure delete this task?',
+      icon: <ExclamationCircleFilled />,
+      content: 'Some descriptions',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        deleteVehicle(record.vehicleNumber);
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const deleteVehicle = async (vehicleNumber) => {
+    console.log(vehicleNumber);
+    try {
+      await deleteDoc(doc(storage, "vehicles", vehicleNumber)).then(() => {
+        notification.success({
+          message: "Success",
+          description: `Vehicle ${vehicleNumber} deleted`,
+          duration: 3,
+        });
+      }).catch((error) => {
+        notification.error({
+          message: "Error",
+          description: `Vehicle ${vehicleNumber} deleted failed`,
+          duration: 3,
+        });
+      });
+       
+    } catch (e) {
+      console.log(e);
+      notification.error({
+        message: "Error",
+        description: `Vehicle ${vehicleNumber} deleted failed`,
+        duration: 3,
+      });
+    }
+  };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -181,14 +246,39 @@ const VehicleList = () => {
     },
     {
       title: "International",
-      dataIndex: "international",
-      key: "international",
+      dataIndex: "internationalCheckbox",
+      key: "internationalCheckbox",
       width: "10%",
+      sorter: (a, b) =>
+        a.internationalCheckbox.props.checked - b.internationalCheckbox.props.checked,
+      sortDirections: ["descend", "ascend"],
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      width: "10%",
+      render: (_, record) => (
+         <Space size="middle">
+          <EditOutlined style={{"color": "green"}} onClick={() => {showModal(record)}}/>
+          <DeleteOutlined style={{"color": "red"}} onClick={() => {showDeleteConfirm(record)}} />
+        </Space>
+      ),
     },
   ];
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
+      <Modal
+        title="Update Vehicle"
+        open={openModal}
+        onOk={hanlderOKModal}
+        onCancel={hanlderCancleModal}
+        footer={[]}
+      >
+        <EditVehicle vehicle={vehicleSelected}/>
+      </Modal>
+
       <div className="w-full h-auto">
         <Button type="primary">
           <Link to="/vehicle">Register Vehicle</Link>

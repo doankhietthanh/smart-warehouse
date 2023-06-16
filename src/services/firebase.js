@@ -14,6 +14,9 @@ import {
   getDoc,
   getDocs,
   collection,
+  updateDoc,
+  deleteField,
+  deleteDoc,
   Timestamp,
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -40,4 +43,4 @@ const googleProvider = new GoogleAuthProvider();
 
 export { auth, googleProvider, GoogleAuthProvider, signInWithPopup, signOut };
 export { database, onValue, ref, set };
-export { storage, doc, setDoc, getDoc, getDocs, collection, Timestamp };
+export { storage, doc, setDoc, getDoc, getDocs, collection, updateDoc, deleteField, deleteDoc,Timestamp };
