@@ -10,11 +10,11 @@ import { StyleProvider } from "@ant-design/cssinjs";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ConfigProvider
-  // theme={{
-  //   token: {
-  //     colorPrimary: "#000000",
-  //   },
-  // }}
+    theme={{
+      token: {
+        colorPrimary: "#a855f7",
+      },
+    }}
   >
     <StyleProvider hashPriority="high">
       <Router>

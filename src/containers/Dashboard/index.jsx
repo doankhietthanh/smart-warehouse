@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import VirtualList from "rc-virtual-list";
 import { Avatar, List, message, notification } from "antd";
+import { EnvironmentOutlined, MailOutlined } from "@ant-design/icons";
 import {
   database,
   ref,
@@ -131,8 +132,12 @@ const Dashboard = () => {
                   description={
                     <div>
                       <div>{item?.username}</div>
-                      <div>{item?.email}</div>
-                      <div className="font-bold">Gate: {item?.gate}</div>
+                      <div>
+                        <MailOutlined /> {item?.email}
+                      </div>
+                      <div className="font-bold">
+                        <EnvironmentOutlined /> {item?.gate}
+                      </div>
                     </div>
                   }
                 />
