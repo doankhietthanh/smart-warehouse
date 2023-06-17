@@ -14,11 +14,12 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     console.log("Success:", values);
+    const vehicleNumber = isInternational ? `INA${values.vehicleNumber}` : `VN${values.vehicleNumber}`;
     updateVehicleToStorage({
       ...values,
-      vehicleNumber: isInternational ? `INA${values.vehicleNumber}` : `VN${values.vehicleNumber}`,
+      vehicleNumber: vehicleNumber,
     });
-    setQrcode(values.vehicleNumber);
+    setQrcode(vehicleNumber);
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);

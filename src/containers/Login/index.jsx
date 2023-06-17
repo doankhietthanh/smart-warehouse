@@ -15,7 +15,6 @@ import {
 } from "../../services/firebase";
 import { notification } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
-import Welcome from "./../Welcome/index";
 
 const Login = () => {
   const history = useHistory();

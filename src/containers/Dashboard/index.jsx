@@ -1,104 +1,146 @@
-import React from "react";
-import logo from "../../assets/logo.png";
+import React, { useState, useEffect } from "react";
+import VirtualList from "rc-virtual-list";
+import { Avatar, List, message, notification } from "antd";
+import {
+  database,
+  ref,
+  set,
+  onValue,
+  storage,
+  getDoc,
+  doc,
+  setDoc,
+  getDocs,
+  collection,
+} from "../../services/firebase";
+
+const calculateContainerHeight = () => {
+  const vh = window.innerHeight * 0.01;
+  return vh * 100;
+};
+const ContainerHeight = calculateContainerHeight();
 
 const Dashboard = () => {
-  return (
-    <div className="grid grid-cols-4 w-full h-full pt-10 bg-cover bg-[url('https://images.pexels.com/photos/114979/pexels-photo-114979.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500')]">
-      <div className="flex flex-col border-r-2 border-b-2 border-gray h-screen mr-4">
-        <div className="flex flex-col items-center border-b-2 border-gray w-full ">
-          <button className="w-[180px] border-2 border-black p-[5px] rounded-xl mt-2 mb-2">
-            Add new container
-          </button>
-        </div>
-        <div className="flex flex-col mr-4">
-          <h1 className="mt-2 text-center">Lọc container</h1>
-          <div className="flex flex-col ml-10">
-            <h1>Theo địa lý</h1>
-            <div>
-              <input type="checkbox" /> <span>Tất cả</span>
-            </div>
-            <div>
-              <input type="checkbox" /> <span>Nội địa</span>
-            </div>
-            <div>
-              <input type="checkbox" /> <span>Ngoại địa</span>
-            </div>
-            <h1>Theo trạng thái</h1>
-            <div>
-              <input type="checkbox" /> <span>Đang vận chuyển</span>
-            </div>
-            <div>
-              <input type="checkbox" /> <span>Đang trong kho</span>
-            </div>
-            <div>
-              <input type="checkbox" /> <span>Đang đưa ra cảng</span>
-            </div>
-          </div>
-          <h1 className="mt-2 text-center">Tìm kiếm container</h1>
-          <form className="relative mx-auto w-max">
-            <input
-              className="search"
-              class="peer relative z-10 h-12 w-full rounded-full border bg-transparent pr-4 pl-16 outline-none"
-              type="text"
-            ></input>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="absolute inset-y-0 my-auto h-8 w-12 border-r border-transparent px-3.5 border-lime-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </form>
-        </div>
-      </div>
+  const [vehicleList, setVehicleList] = useState([]);
 
-      <div className="col-span-3 flex flex-col mr-10 ">
-        <div className="text-center">DANH SÁCH CONTAINER TRONG KHO</div>
-        <div className="flex w-full border-2 border-black p-[5px] rounded-xl mt-2 items-center">
-          <img
-            src={logo}
-            alt="logo"
-            className="w-[130px] h-[100px] mix-blend-multiply object-cover "
-          ></img>
-          <div className="flex gap-60 ml-10">
-            <div>
-              <h1>Mã container: </h1>
-              <h1>Email người gửi: </h1>
-              <h1>Xe chở container: </h1>
-            </div>
-            <div>
-              <h1>Thời gian nhập kho: </h1>
-              <h1>Vị trí: </h1>
-              <h1>Trạng thái: </h1>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full border-2 border-black p-[5px] rounded-xl mt-2 items-center">
-          <img
-            src={logo}
-            alt="logo"
-            className="w-[130px] h-[100px] mix-blend-multiply object-cover"
-          ></img>
-          <div className="flex gap-60 ml-10">
-            <div>
-              <h1>Mã container: </h1>
-              <h1>Email người gửi: </h1>
-              <h1>Xe chở container: </h1>
-            </div>
-            <div>
-              <h1>Thời gian nhập kho: </h1>
-              <h1>Vị trí: </h1>
-              <h1>Trạng thái: </h1>
-            </div>
-          </div>
-        </div>
+  useEffect(() => {
+    getVehicleListFromStorage();
+  }, []);
+
+  const getVehicleListFromStorage = async () => {
+    try {
+      const vehiclesRef = collection(storage, "vehicles");
+      const vehiclesSnapshot = await getDocs(vehiclesRef);
+      const vehiclesList = vehiclesSnapshot.docs.map((doc) => {
+        return doc.data();
+      });
+      //sort by time
+      console.log(vehiclesList);
+      vehiclesList.sort((a, b) => b?.time - a?.time);
+      console.log(vehiclesList);
+      setVehicleList(vehiclesList);
+    } catch (e) {
+      notification.error({
+        message: "Error",
+        description: `Firebase: ${e.message} Your project has exceeded no-cost limits. Please upgrade to ensure there is no service disruption.
+        `,
+      });
+    }
+  };
+
+  const onScroll = (e) => {
+    if (
+      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+      ContainerHeight
+    ) {
+      appendData();
+    }
+  };
+
+  const formatTime = (time) => {
+    if (!time) return;
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const date = new Date(time * 1000);
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+
+    return `${day} ${month} ${year} - ${hour}:${minute}:${second}`;
+  };
+
+  const randomColor = () => {
+    const colors = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  return (
+    <div className="w-full h-full flex justify-center">
+      <div className="w-[200px] text-green-500">Filter</div>
+      <div className="flex-1 h-full w-full flex justify-center items-center">
+        <List className="w-full h-full">
+          <VirtualList
+            data={vehicleList}
+            height={ContainerHeight}
+            itemHeight={47}
+            itemKey="vehicleNumber"
+            onScroll={onScroll}
+          >
+            {(item) => (
+              <List.Item
+                className={`${
+                  item?.type === "checkin" ? "bg-blue-300" : "bg-red-200"
+                }
+                flex justify-between items-center rounded-xl m-2`}
+                key={item?.vehicleNumber}
+              >
+                <List.Item.Meta
+                  className="flex justify-center items-center ml-5"
+                  avatar={
+                    <Avatar
+                      style={{
+                        backgroundColor: randomColor(),
+                      }}
+                    >
+                      {item?.username[0]}
+                    </Avatar>
+                  }
+                  title={
+                    <div>
+                      <div className="font-bold text-xl">
+                        {item?.vehicleNumber}
+                      </div>
+                    </div>
+                  }
+                  description={
+                    <div>
+                      <div>{item?.username}</div>
+                      <div>{item?.email}</div>
+                      <div className="font-bold">Gate: {item?.gate}</div>
+                    </div>
+                  }
+                />
+                <div className="mr-5">{formatTime(item?.time)}</div>
+              </List.Item>
+            )}
+          </VirtualList>
+        </List>
       </div>
     </div>
   );
