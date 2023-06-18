@@ -7,7 +7,7 @@ import {
   set,
   onValue,
   storage,
-  getDoc,
+  deleteDoc,
   doc,
   setDoc,
   getDocs,
@@ -15,6 +15,11 @@ import {
 } from "../../services/firebase";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Space, Table, Tag, notification, message } from "antd";
+
+const ACTION_DB = {
+  OPEN_GATE: 3,
+  CLOSE_GATE: 4,
+};
 
 const columns = [
   {
@@ -82,6 +87,8 @@ const Welcome = () => {
         );
         if (vehicle) {
           setVehicleCheckout(vehicle);
+          set(ref(database, "checkout/gate/"), vehicle?.gate);
+          set(ref(database, "action"), ACTION_DB.CLOSE_GATE);
           setDoc(doc(storage, "history", time.toString()), {
             ...vehicle,
             time: time,
@@ -89,6 +96,7 @@ const Welcome = () => {
           }).then(() => {
             console.log("Document successfully written!");
           });
+          deleteDoc(doc(storage, "gates", vehicle?.gate));
         } else {
           console.log("Vehicle not found");
         }
@@ -222,14 +230,20 @@ const Welcome = () => {
 
   const getImageCheckinFromDB = () => {
     onValue(ref(database, "checkin/camera/"), (snapshot) => {
-      const data = snapshot.val();
+      let data = snapshot.val();
+
+      const header = "data:image/png;base64,";
+      data = header + data;
+
       setImgCheckin(data);
     });
   };
 
   const getImageCheckoutFromDB = () => {
     onValue(ref(database, "checkout/camera/"), (snapshot) => {
-      const data = snapshot.val();
+      let data = snapshot.val();
+      const header = "data:image/png;base64,";
+      data = header + data;
       setImgCheckout(data);
     });
   };
@@ -251,7 +265,8 @@ const Welcome = () => {
       const time = Math.floor(date.getTime() / 1000);
       set(ref(database, "checkin/time/"), time);
 
-      set(ref(database, "gate/"), gateEmpty[0]);
+      set(ref(database, "checkin/gate/"), gateEmpty[0]);
+      set(ref(database, "action"), ACTION_DB.OPEN_GATE);
 
       const dataStorage = {
         ...vehicle,
