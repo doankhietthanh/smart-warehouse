@@ -14,7 +14,7 @@ import {
   collection,
 } from "../../services/firebase";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Space, Table, Tag, notification } from "antd";
+import { Space, Table, Tag, notification, message } from "antd";
 
 const columns = [
   {
@@ -25,29 +25,6 @@ const columns = [
   {
     title: "Value",
     dataIndex: "value",
-  },
-];
-
-const data = [
-  {
-    key: "Time",
-    value: "10:00 AM",
-  },
-  {
-    key: "Vehicle Number",
-    value: "MH 12 1234",
-  },
-  {
-    key: "User",
-    value: "Rahul",
-  },
-  {
-    key: "Email",
-    value: "admin@gmail.com",
-  },
-  {
-    key: "Position",
-    value: "01",
   },
 ];
 
@@ -68,6 +45,10 @@ const Welcome = () => {
   const [timeVehicleCheckout, setTimeVehicleCheckout] = useState(null);
   const [dataVehicleCheckout, setDataVehicleCheckout] = useState([]);
 
+  const [gateEmpty, setGateEmpty] = useState([]);
+  const [gateUsed, setGateUsed] = useState([]);
+  const [totalGate, setTotalGate] = useState(10);
+
   useEffect(() => {
     getImageCheckinFromDB();
 
@@ -75,6 +56,7 @@ const Welcome = () => {
       try {
         const result = await readQRFromImage(imgCheckin);
         setReaderQrCheckin(result);
+        verifyVehicle(result);
       } catch (error) {
         console.error(error);
       }
@@ -92,18 +74,20 @@ const Welcome = () => {
         setReaderQrCheckout(result);
 
         const date = new Date();
-        const time = formatTime(date);
-        setTimeVehicleCheckout(time);
+        const time = Math.floor(date.getTime() / 1000);
+        setTimeVehicleCheckout(formatTime(date));
 
         const vehicle = vehicleList.find(
           (vehicle) => vehicle.vehicleNumber === result
         );
         if (vehicle) {
           setVehicleCheckout(vehicle);
-          setDoc(doc(storage, "vehicles", vehicle.vehicleNumber), {
+          setDoc(doc(storage, "history", time.toString()), {
             ...vehicle,
-            time: Math.floor(date.getTime() / 1000),
+            time: time,
             type: "checkout",
+          }).then(() => {
+            console.log("Document successfully written!");
           });
         } else {
           console.log("Vehicle not found");
@@ -118,11 +102,18 @@ const Welcome = () => {
 
   useEffect(() => {
     getVehicleListFromStorage();
+    onValue(ref(database, "totalGate"), (snapshot) => {
+      setTotalGate(snapshot.val());
+    });
   }, []);
 
   useEffect(() => {
-    verifyVehicle();
-  }, [vehicleList, readerQrCheckin, readerQrCheckout]);
+    getGateUsedFromStorage();
+  }, []);
+
+  useEffect(() => {
+    verifyVehicle(readerQrCheckin);
+  }, [vehicleList, readerQrCheckin]);
 
   useEffect(() => {
     setDataVehicleCheckin([
@@ -143,8 +134,8 @@ const Welcome = () => {
         value: vehicleVerified?.email,
       },
       {
-        key: "Position",
-        value: "01",
+        key: "Gate",
+        value: gateEmpty[0]?.toString() ?? "No gate available",
       },
     ]);
   }, [vehicleVerified, timeVehicleCheckin]);
@@ -168,8 +159,8 @@ const Welcome = () => {
         value: vehicleCheckout?.email,
       },
       {
-        key: "Position",
-        value: "01",
+        key: "Gate",
+        value: vehicleCheckout?.gate,
       },
     ]);
   }, [vehicleVerified, timeVehicleCheckout]);
@@ -243,22 +234,33 @@ const Welcome = () => {
     });
   };
 
-  const verifyVehicle = () => {
+  const verifyVehicle = (readerQr) => {
     const vehicle = vehicleList.find(
-      (vehicle) => vehicle.vehicleNumber === readerQrCheckin
+      (vehicle) => vehicle.vehicleNumber === readerQr
     );
+
+    if (gateEmpty.length === 0) {
+      setVerified(false);
+      return;
+    }
+
     if (vehicle) {
       setVerified(true);
       setVehicleVerified(vehicle);
       const date = new Date();
       const time = Math.floor(date.getTime() / 1000);
-
       set(ref(database, "checkin/time/"), time);
-      setDoc(doc(storage, "vehicles", vehicle.vehicleNumber), {
+      const dataStorage = {
         ...vehicle,
         time: time,
+        gate: gateEmpty[0].toString(), //get first gate empty
         type: "checkin",
-      });
+      };
+      setDoc(doc(storage, "history", time.toString()), dataStorage);
+
+      console.log(gateEmpty[0]);
+      setDoc(doc(storage, "gates", gateEmpty[0].toString()), dataStorage);
+      setDoc(doc(storage, "vehicles", vehicle.vehicleNumber), dataStorage);
 
       setTimeVehicleCheckin(formatTime(date.getTime()));
     } else {
@@ -282,6 +284,41 @@ const Welcome = () => {
         `,
       });
     }
+  };
+
+  const getGateUsedFromStorage = async () => {
+    try {
+      const gateRef = collection(storage, "gates");
+      const gateSnapshot = await getDocs(gateRef);
+      const gateList = gateSnapshot.docs.map((doc) => {
+        return doc.id;
+      });
+      console.log(gateList);
+      findGateEmpty(gateList);
+    } catch (e) {
+      notification.error({
+        message: "Error",
+        description: `Firebase: ${e.message}`,
+      });
+    }
+  };
+
+  const findGateEmpty = async (gates) => {
+    //gateUsed = [1,2];
+    //totalGate = 3;
+    // return gateEmpty = [3]
+
+    const gateEmpty = [];
+    for (let i = 1; i <= totalGate; i++) {
+      if (!gates.includes(i.toString())) {
+        gateEmpty.push(i.toString());
+      }
+    }
+
+    if (gateEmpty.length === 0) {
+      message.error("Gate is full");
+    }
+    setGateEmpty(gateEmpty);
   };
 
   const formatTime = (time) => {
@@ -342,7 +379,7 @@ const Welcome = () => {
         ) : (
           <div className="text-center flex gap-2">
             <CloseCircleFilled style={{ fontSize: "24px", color: "#ff7875" }} />
-            <span className="text-xl">Vehicle is not register</span>
+            <span className="text-xl">Vehicle is not verifed</span>
           </div>
         )}
       </div>
