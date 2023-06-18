@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import { SearchOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Button, Input, Space, Table, Modal } from "antd";
-import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import {
@@ -67,17 +67,17 @@ const VehicleList = () => {
 
   const showDeleteConfirm = (record) => {
     confirm({
-      title: 'Are you sure delete this vehicle?',
+      title: "Are you sure delete this vehicle?",
       icon: <ExclamationCircleFilled />,
-      content: 'Some descriptions',
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
+      content: "Some descriptions",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
       onOk() {
         deleteVehicle(record.vehicleNumber);
       },
       onCancel() {
-        console.log('Cancel');
+        console.log("Cancel");
       },
     });
   };
@@ -85,20 +85,21 @@ const VehicleList = () => {
   const deleteVehicle = async (vehicleNumber) => {
     console.log(vehicleNumber);
     try {
-      await deleteDoc(doc(storage, "vehicles", vehicleNumber)).then(() => {
-        notification.success({
-          message: "Success",
-          description: `Vehicle ${vehicleNumber} deleted`,
-          duration: 3,
+      await deleteDoc(doc(storage, "vehicles", vehicleNumber))
+        .then(() => {
+          notification.success({
+            message: "Success",
+            description: `Vehicle ${vehicleNumber} deleted`,
+            duration: 3,
+          });
+        })
+        .catch((error) => {
+          notification.error({
+            message: "Error",
+            description: `Vehicle ${vehicleNumber} deleted failed`,
+            duration: 3,
+          });
         });
-      }).catch((error) => {
-        notification.error({
-          message: "Error",
-          description: `Vehicle ${vehicleNumber} deleted failed`,
-          duration: 3,
-        });
-      });
-       
     } catch (e) {
       console.log(e);
       notification.error({
@@ -228,6 +229,8 @@ const VehicleList = () => {
       key: "vehicleNumber",
       width: "20%",
       ...getColumnSearchProps("vehicleNumber"),
+      sorter: (a, b) => a.vehicleNumber.length - b.vehicleNumber.length,
+      sortDirections: ["descend", "ascend"],
     },
     {
       title: "User Name",
@@ -235,6 +238,8 @@ const VehicleList = () => {
       key: "username",
       width: "20%",
       ...getColumnSearchProps("username"),
+      sorter: (a, b) => a.username.length - b.username.length,
+      sortDirections: ["descend", "ascend"],
     },
     {
       title: "Email",
@@ -250,7 +255,8 @@ const VehicleList = () => {
       key: "internationalCheckbox",
       width: "10%",
       sorter: (a, b) =>
-        a.internationalCheckbox.props.checked - b.internationalCheckbox.props.checked,
+        a.internationalCheckbox.props.checked -
+        b.internationalCheckbox.props.checked,
       sortDirections: ["descend", "ascend"],
     },
     {
@@ -259,9 +265,19 @@ const VehicleList = () => {
       key: "action",
       width: "10%",
       render: (_, record) => (
-         <Space size="middle">
-          <EditOutlined style={{"color": "green"}} onClick={() => {showModal(record)}}/>
-          <DeleteOutlined style={{"color": "red"}} onClick={() => {showDeleteConfirm(record)}} />
+        <Space size="middle">
+          <EditOutlined
+            style={{ color: "green" }}
+            onClick={() => {
+              showModal(record);
+            }}
+          />
+          <DeleteOutlined
+            style={{ color: "red" }}
+            onClick={() => {
+              showDeleteConfirm(record);
+            }}
+          />
         </Space>
       ),
     },
@@ -276,7 +292,7 @@ const VehicleList = () => {
         onCancel={hanlderCancleModal}
         footer={[]}
       >
-        <EditVehicle vehicle={vehicleSelected}/>
+        <EditVehicle vehicle={vehicleSelected} />
       </Modal>
 
       <div className="w-full h-auto">

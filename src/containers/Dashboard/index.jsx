@@ -74,7 +74,7 @@ const Dashboard = () => {
     if (!value) return;
 
     const vehicles = vehicleListBackup.filter(
-      (vehicle) => vehicle.vehicleNumber === value
+      (vehicle) => vehicle?.vehicleNumber === value
     );
     console.log(vehicles);
     if (vehicles) {
@@ -90,7 +90,7 @@ const Dashboard = () => {
     if (!value) return;
 
     const vehicles = vehicleListBackup.filter(
-      (vehicle) => vehicle.gate === Number(value)
+      (vehicle) => vehicle?.gate == value
     );
     console.log(vehicles);
 
@@ -237,7 +237,7 @@ const Dashboard = () => {
                         <MailOutlined /> {item?.email}
                       </div>
                       <div className="font-bold">
-                        <EnvironmentOutlined /> {item?.gate}
+                        <EnvironmentOutlined /> Gate {item?.gate}
                       </div>
                     </div>
                   }
