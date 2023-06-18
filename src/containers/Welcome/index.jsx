@@ -87,7 +87,7 @@ const Welcome = () => {
         );
         if (vehicle) {
           setVehicleCheckout(vehicle);
-          set(ref(database, "checkout/gate/"), vehicle?.gate);
+          set(ref(database, "checkout/gate/"), Number(vehicle?.gate));
           set(ref(database, "action"), ACTION_DB.CLOSE_GATE);
           setDoc(doc(storage, "history", time.toString()), {
             ...vehicle,
@@ -265,7 +265,7 @@ const Welcome = () => {
       const time = Math.floor(date.getTime() / 1000);
       set(ref(database, "checkin/time/"), time);
 
-      set(ref(database, "checkin/gate/"), gateEmpty[0]);
+      set(ref(database, "checkin/gate/"), Number(gateEmpty[0]));
       set(ref(database, "action"), ACTION_DB.OPEN_GATE);
 
       const dataStorage = {
