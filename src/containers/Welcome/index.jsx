@@ -109,7 +109,7 @@ const Welcome = () => {
 
   useEffect(() => {
     getGateUsedFromStorage();
-  }, []);
+  }, [imgCheckin]);
 
   useEffect(() => {
     verifyVehicle(readerQrCheckin);
@@ -163,7 +163,7 @@ const Welcome = () => {
         value: vehicleCheckout?.gate,
       },
     ]);
-  }, [vehicleVerified, timeVehicleCheckout]);
+  }, [vehicleCheckout, timeVehicleCheckout, imgCheckout]);
 
   const readQRFromImage = async (base64Image) => {
     return new Promise((resolve, reject) => {
@@ -250,6 +250,9 @@ const Welcome = () => {
       const date = new Date();
       const time = Math.floor(date.getTime() / 1000);
       set(ref(database, "checkin/time/"), time);
+
+      set(ref(database, "gate/"), gateEmpty[0]);
+
       const dataStorage = {
         ...vehicle,
         time: time,
