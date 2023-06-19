@@ -28,7 +28,6 @@ const Welcome = () => {
       const vehiclesRef = collection(storage, "vehicles");
       const vehiclesSnapshot = await getDocs(vehiclesRef);
       const vehiclesList = vehiclesSnapshot.docs.map((doc) => {
-        console.log(doc.data());
         return doc.data();
       });
       setVehicleList(vehiclesList);

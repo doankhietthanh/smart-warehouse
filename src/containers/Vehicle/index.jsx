@@ -14,7 +14,9 @@ const Vehicle = () => {
 
   const onFinish = (values) => {
     console.log("Success:", values);
-    const vehicleNumber = isInternational ? `INA${values.vehicleNumber}` : `VN${values.vehicleNumber}`;
+    const vehicleNumber = isInternational
+      ? `INA${values.vehicleNumber}`
+      : `VN${values.vehicleNumber}`;
     updateVehicleToStorage({
       ...values,
       vehicleNumber: vehicleNumber,
@@ -94,7 +96,7 @@ const Vehicle = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-         <Form.Item
+          <Form.Item
             name="international"
             valuePropName="checked"
             initialValue={false}
@@ -103,9 +105,13 @@ const Vehicle = () => {
               span: 16,
             }}
           >
-            <Checkbox onChange={(e) => {
-              setIsInternational(e.target.checked)
-            }}>International</Checkbox>
+            <Checkbox
+              onChange={(e) => {
+                setIsInternational(e.target.checked);
+              }}
+            >
+              International
+            </Checkbox>
           </Form.Item>
 
           <Form.Item
@@ -119,7 +125,10 @@ const Vehicle = () => {
               },
             ]}
           >
-            <Input  addonBefore={isInternational ? "INA" : "VN"} placeholder="Vehicle number" />
+            <Input
+              addonBefore={isInternational ? "INA" : "VN"}
+              placeholder="Vehicle number"
+            />
           </Form.Item>
 
           <Form.Item
@@ -147,8 +156,6 @@ const Vehicle = () => {
           >
             <Input placeholder="Email" type="email" />
           </Form.Item>
-
-         
 
           <Form.Item
             wrapperCol={{

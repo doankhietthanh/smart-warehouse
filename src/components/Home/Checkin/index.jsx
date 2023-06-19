@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ACTION_DB,
   UNCHECKED_QR,
@@ -21,6 +21,7 @@ import jsQR from "jsqr";
 import { Image as ImageAntd } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Space, Table, Tag, notification, message } from "antd";
+import { Html5Qrcode } from "html5-qrcode";
 
 const Checkin = (props) => {
   const [readerQrCheckin, setReaderQrCheckin] = useState(null);
@@ -47,9 +48,26 @@ const Checkin = (props) => {
 
     const loadImageCheckin = async () => {
       try {
-        const result = await readQRFromImage(imgCheckin);
-        setReaderQrCheckin(result);
-        verifyVehicle(result);
+        if (!imgCheckin) return;
+        const base64String = imgCheckin
+          .replace("data:", "")
+          .replace(/^.+,/, "");
+        const imageFile = createFileFromBase64(
+          base64String,
+          "checkin.png",
+          "image/png"
+        );
+        const qrcode = new Html5Qrcode("reader");
+        qrcode
+          .scanFile(imageFile, true)
+          .then((result) => {
+            console.log("QR Code:", result);
+            setReaderQrCheckin(result);
+            verifyVehicle(result);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       } catch (error) {
         console.error(error);
       }
@@ -199,66 +217,33 @@ const Checkin = (props) => {
     setGateEmpty(gateEmpty);
   };
 
-  const readQRFromImage = async (base64Image) => {
-    return new Promise((resolve, reject) => {
-      // Create a new Image object
-      const image = new Image();
-      image.src = base64Image;
+  const createFileFromBase64 = (base64String, fileName, fileType) => {
+    const byteCharacters = atob(base64String);
+    const byteArrays = [];
 
-      // Wait for the image to load
-      image.onload = async () => {
-        try {
-          // Create a canvas element
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
 
-          // Set the canvas size to the image size
-          canvas.width = image.width;
-          canvas.height = image.height;
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
 
-          // Draw the image on the canvas
-          context.drawImage(image, 0, 0);
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
 
-          // Get the image data from the canvas
-          const imageData = context.getImageData(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-          );
-
-          // Decode the QR code from the image data
-          const code = await jsQR(
-            imageData.data,
-            imageData.width,
-            imageData.height
-          );
-
-          // Handle the decoded QR code
-          if (code) {
-            console.log("QR code:", code.data);
-            resolve(code.data);
-          } else {
-            console.log("No QR code found");
-            resolve(null);
-          }
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      // Handle image load error
-      image.onerror = (error) => {
-        reject(error);
-      };
-    });
+    const blob = new Blob(byteArrays, { type: fileType });
+    return new File([blob], fileName, { type: fileType });
   };
 
   return (
     <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check in</div>
-        <ImageAntd src={imgCheckin} width={500} height={500} />
+        <div className="w-[500px] h-[500px] flex justify-center items-center">
+          <ImageAntd src={imgCheckin} id="reader" width={500} />
+        </div>
         <div>
           <span>Vehicle number: </span>
           <span className="text-2xl font-bold">{readerQrCheckin}</span>
