@@ -64,7 +64,7 @@ const Checkout = (props) => {
     };
 
     loadImageCheckout();
-  }, [imgCheckout]);
+  }, [imgCheckout, readerQrCheckout]);
 
   useEffect(() => {
     verifyVehicle(readerQrCheckout);

@@ -74,7 +74,7 @@ const Checkin = (props) => {
     };
 
     loadImageCheckin();
-  }, [imgCheckin]);
+  }, [imgCheckin, readerQrCheckin]);
 
   useEffect(() => {
     verifyVehicle(readerQrCheckin);
@@ -171,6 +171,7 @@ const Checkin = (props) => {
     } else {
       setVerified(false);
       set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
+      setMessageError("Vehicle not found");
     }
   };
 
