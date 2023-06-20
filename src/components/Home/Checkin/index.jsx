@@ -58,6 +58,9 @@ const Checkin = (props) => {
           "image/png"
         );
         const qrcode = new Html5Qrcode("reader");
+
+        qrcode.clear();
+
         qrcode
           .scanFile(imageFile, true)
           .then((result) => {
@@ -74,7 +77,7 @@ const Checkin = (props) => {
     };
 
     loadImageCheckin();
-  }, [imgCheckin, readerQrCheckin]);
+  }, [imgCheckin, readerQrCheckin, props.vehicleList]);
 
   useEffect(() => {
     verifyVehicle(readerQrCheckin);

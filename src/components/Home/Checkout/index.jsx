@@ -47,7 +47,8 @@ const Checkout = (props) => {
           "checkout.png",
           "image/png"
         );
-        const qrcode = new Html5Qrcode("reader");
+        const qrcode = new Html5Qrcode("reader-checkout");
+        qrcode.clear();
         qrcode
           .scanFile(imageFile, true)
           .then((result) => {
@@ -64,7 +65,7 @@ const Checkout = (props) => {
     };
 
     loadImageCheckout();
-  }, [imgCheckout, readerQrCheckout]);
+  }, [imgCheckout, readerQrCheckout, props.vehicleList]);
 
   useEffect(() => {
     verifyVehicle(readerQrCheckout);
@@ -180,7 +181,7 @@ const Checkout = (props) => {
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check out</div>
         <div className="w-[500px] h-[500px] flex justify-center items-center">
-          <ImageAntd src={imgCheckout} id="reader" width={500} />
+          <ImageAntd src={imgCheckout} id="reader-checkout" width={500} />
         </div>
         <div>
           <span>Vehicle number: </span>
