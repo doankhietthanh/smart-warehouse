@@ -8,11 +8,7 @@ import {
   DesktopOutlined,
 } from "@ant-design/icons";
 
-import {
-  SensorsThreshold,
-  VacantPosition,
-  VehicleList,
-} from "../../components/Settings";
+import { SensorsThreshold, Wifi, VehicleList } from "../../components/Settings";
 
 const getItemMenu = (label, key, icon, children, type) => {
   return {
@@ -27,7 +23,7 @@ const getItemMenu = (label, key, icon, children, type) => {
 const itemsMenu = [
   getItemMenu("Sensors Threshold", "sensors_threshold", <PieChartOutlined />),
   getItemMenu("Vehicle List", "vehicle_list", <DesktopOutlined />),
-  getItemMenu("Vacant Position", "vacant_position", <ContainerOutlined />),
+  getItemMenu("Wifi Setup", "wifi", <ContainerOutlined />),
 ];
 
 const Settings = () => {
@@ -51,7 +47,7 @@ const Settings = () => {
       </div>
       <div className="flex-1 w-full h-full">
         {layout === "sensors_threshold" && <SensorsThreshold />}
-        {layout === "vacant_position" && <VacantPosition />}
+        {layout === "wifi" && <Wifi />}
         {layout === "vehicle_list" && <VehicleList />}
       </div>
     </div>

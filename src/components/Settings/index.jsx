@@ -1,5 +1,5 @@
 import SensorsThreshold from "./SensorsThreshold";
 import VehicleList from "./VehicleList";
-import VacantPosition from "./VacantPosition";
+import Wifi from "./Wifi";
 
-export { SensorsThreshold, VehicleList, VacantPosition };
+export { SensorsThreshold, VehicleList, Wifi };
