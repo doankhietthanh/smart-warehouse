@@ -11,6 +11,7 @@ import {
   getDocs,
   collection,
 } from "../../../services/firebase";
+import { formatTime } from "../../../utils/constant";
 
 const Gates = () => {
   const [gates, setGates] = useState([]);
@@ -105,8 +106,8 @@ const Gates = () => {
                 gate.color
               } ${
                 gateSelected?.gate == gate?.gate
-                  ? "border-2 border-black"
-                  : "border-2 border-transparent"
+                  ? "border-2 border-purple-800"
+                  : ""
               } cursor-pointer`}
               onClick={() => handleGateClick(gate.gate)}
             >
@@ -133,11 +134,11 @@ const Gates = () => {
             </div>
             <div className="w-full flex justify-between">
               <span>Email</span>
-              <span className="text-xl">{gateSelected?.email}</span>
+              <span>{gateSelected?.email}</span>
             </div>
             <div className="w-full flex justify-between">
               <span>Checkin</span>
-              <span className="text-xl">{gateSelected?.time}</span>
+              <span>{formatTime(gateSelected?.time * 1000)}</span>
             </div>
           </div>
         </div>

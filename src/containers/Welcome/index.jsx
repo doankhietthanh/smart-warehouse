@@ -16,6 +16,7 @@ import {
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
 import { Button, notification } from "antd";
+import { sendEmail } from "../../services/mail";
 
 const Welcome = () => {
   const [vehicleList, setVehicleList] = useState([]);
@@ -63,6 +64,13 @@ const Welcome = () => {
     set(ref(database, "gate/gateIsFull"), Number(0));
   };
 
+  const onHanlderSendTestMail = async () => {
+    const to = "19119220@student.hcmute.edu.vn";
+    const subject = "Test mail";
+    const hmtl = "<h1>Test mail</h1>";
+    await sendEmail(to, subject, hmtl);
+  };
+
   return (
     <div className="w-full h-full flex flex-col gap-5 justify-center items-center">
       <Button
@@ -72,6 +80,7 @@ const Welcome = () => {
       >
         Clear all gate
       </Button>
+      <Button onClick={onHanlderSendTestMail}>Send test mail</Button>
       <div className="w-full h-full flex flex-row">
         <Checkin vehicleList={vehicleList} />
         <Checkout vehicleList={vehicleList} />

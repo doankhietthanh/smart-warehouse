@@ -163,7 +163,7 @@ const History = () => {
                     </div>
                   }
                 />
-                <div className="mr-5">{formatTime(item?.time)}</div>
+                <div className="mr-5">{formatTime(item?.time * 1000)}</div>
               </List.Item>
             )}
           </VirtualList>

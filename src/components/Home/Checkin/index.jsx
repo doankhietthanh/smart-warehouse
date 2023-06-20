@@ -51,7 +51,9 @@ const Checkin = (props) => {
         if (!imgCheckin) return;
         const base64String = imgCheckin
           .replace("data:", "")
-          .replace(/^.+,/, "");
+          .replace(/^.+,/, "")
+          .replace(/%2F/g, "/")
+          .replace(/%2B/g, "+");
         const imageFile = createFileFromBase64(
           base64String,
           "checkin.png",
