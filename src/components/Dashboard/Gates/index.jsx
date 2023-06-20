@@ -28,7 +28,7 @@ const Gates = () => {
   }, []);
 
   useEffect(() => {
-    if (gates.length === 0) return;
+    // if (gates.length === 0) return;
     const gatesColor = [];
     for (let i = 1; i <= totalGate; i++) {
       gatesColor.push({

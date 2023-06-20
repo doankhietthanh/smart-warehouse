@@ -21,7 +21,11 @@ import jsQR from "jsqr";
 import { Image as ImageAntd } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Space, Table, Tag, notification, message } from "antd";
-import { Html5Qrcode } from "html5-qrcode";
+import {
+  Html5Qrcode,
+  Html5QrcodeSupportedFormats,
+  Html5QrcodeScanType,
+} from "html5-qrcode";
 
 const Checkout = (props) => {
   const [readerQrCheckout, setReaderQrCheckout] = useState(null);
@@ -41,13 +45,24 @@ const Checkout = (props) => {
         if (!imgCheckout) return;
         const base64String = imgCheckout
           .replace("data:", "")
-          .replace(/^.+,/, "");
+          .replace(/^.+,/, "")
+          .replace(/%2F/g, "/")
+          .replace(/%2B/g, "+");
         const imageFile = createFileFromBase64(
           base64String,
           "checkout.png",
           "image/png"
         );
-        const qrcode = new Html5Qrcode("reader-checkout");
+        const qrcode = new Html5Qrcode("reader-checkout", {
+          qrbox: { width: 250, height: 250 },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+          ],
+          scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
+        });
         qrcode.clear();
         qrcode
           .scanFile(imageFile, true)
@@ -180,7 +195,7 @@ const Checkout = (props) => {
     <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check out</div>
-        <div className="w-[500px] h-[500px] flex justify-center items-center">
+        <div className="w-[360px] h-[360px] flex justify-center items-center border-2 border-red-400 rounded-xl">
           <ImageAntd src={imgCheckout} id="reader-checkout" width={500} />
         </div>
         <div>

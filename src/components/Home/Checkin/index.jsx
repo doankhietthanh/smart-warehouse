@@ -21,7 +21,12 @@ import jsQR from "jsqr";
 import { Image as ImageAntd } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Space, Table, Tag, notification, message } from "antd";
-import { Html5Qrcode } from "html5-qrcode";
+import {
+  Html5Qrcode,
+  Html5QrcodeScanner,
+  Html5QrcodeSupportedFormats,
+  Html5QrcodeScanType,
+} from "html5-qrcode";
 
 const Checkin = (props) => {
   const [readerQrCheckin, setReaderQrCheckin] = useState(null);
@@ -59,7 +64,16 @@ const Checkin = (props) => {
           "checkin.png",
           "image/png"
         );
-        const qrcode = new Html5Qrcode("reader");
+        const qrcode = new Html5Qrcode("reader", {
+          qrbox: { width: 250, height: 250 },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+          ],
+          scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
+        });
 
         qrcode.clear();
 
@@ -197,7 +211,6 @@ const Checkin = (props) => {
   };
 
   const findGateEmpty = async (gates) => {
-    console.log(gates);
     let gateEmpty = [];
 
     if (gates.length === 0) {
@@ -210,7 +223,6 @@ const Checkin = (props) => {
           gateEmpty.push(i.toString());
         }
       }
-      console.log(totalGate);
     }
 
     if (gateEmpty.length === 0) {
@@ -247,8 +259,8 @@ const Checkin = (props) => {
     <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check in</div>
-        <div className="w-[500px] h-[500px] flex justify-center items-center">
-          <ImageAntd src={imgCheckin} id="reader" width={500} />
+        <div className="w-[360px] h-[360px] flex justify-center items-center border-2 border-red-400 rounded-xl">
+          <ImageAntd src={imgCheckin} id="reader" />
         </div>
         <div>
           <span>Vehicle number: </span>
