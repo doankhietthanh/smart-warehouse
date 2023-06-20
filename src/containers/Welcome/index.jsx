@@ -15,6 +15,7 @@ import {
 
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
+import { Button, notification } from "antd";
 
 const Welcome = () => {
   const [vehicleList, setVehicleList] = useState([]);
@@ -40,10 +41,41 @@ const Welcome = () => {
     }
   };
 
+  const onHanlerClearAllGate = async () => {
+    console.log("clear all gate");
+    for (let i = 1; i <= 3; i++) {
+      await deleteDoc(doc(storage, "gates", i.toString()))
+        .then(() => {
+          notification.success({
+            message: "Success",
+            description: `Gate ${i} deleted`,
+            duration: 3,
+          });
+        })
+        .catch((error) => {
+          notification.error({
+            message: "Error",
+            description: `Gate ${i} deleted failed`,
+            duration: 3,
+          });
+        });
+    }
+    set(ref(database, "gate/gateIsFull"), Number(0));
+  };
+
   return (
-    <div className="w-full h-full flex flex-row gap-5 justify-center items-center">
-      <Checkin vehicleList={vehicleList} />
-      <Checkout vehicleList={vehicleList} />
+    <div className="w-full h-full flex flex-col gap-5 justify-center items-center">
+      <Button
+        className="mt-10 pt-10"
+        type="primary"
+        onClick={onHanlerClearAllGate}
+      >
+        Clear all gate
+      </Button>
+      <div className="w-full h-full flex flex-row">
+        <Checkin vehicleList={vehicleList} />
+        <Checkout vehicleList={vehicleList} />
+      </div>
     </div>
   );
 };

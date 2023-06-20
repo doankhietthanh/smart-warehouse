@@ -143,11 +143,11 @@ const Checkin = (props) => {
 
       setVehicleVerified({ ...vehicle, gate: gateEmpty[0]?.toString() });
 
-      if (gateEmpty.length === 0) {
-        setMessageError("Gate is full");
-        // setVerified(false);
-        return;
-      }
+      // if (gateEmpty.length === 0) {
+      //   setMessageError("Gate is full");
+      //   // setVerified(false);
+      //   return;
+      // }
 
       const date = new Date();
       const time = Math.floor(date.getTime() / 1000);
