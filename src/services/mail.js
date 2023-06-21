@@ -3,7 +3,7 @@ import axios from "axios";
 const sendgrid = axios.create({
   baseURL: "https://api.sendgrid.com/v3",
   headers: {
-    Authorization: `Bearer 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`,
+    Authorization: `Bearer ${import.meta.env.SENDGRID_API_KEY}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },

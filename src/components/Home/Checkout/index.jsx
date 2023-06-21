@@ -42,38 +42,41 @@ const Checkout = (props) => {
 
     const loadImageCheckout = async () => {
       try {
-        if (!imgCheckout) return;
-        const base64String = imgCheckout
-          .replace("data:", "")
-          .replace(/^.+,/, "")
-          .replace(/%2F/g, "/")
-          .replace(/%2B/g, "+");
-        const imageFile = createFileFromBase64(
-          base64String,
-          "checkout.png",
-          "image/png"
-        );
-        const qrcode = new Html5Qrcode("reader-checkout", {
-          qrbox: { width: 250, height: 250 },
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.QR_CODE,
-            Html5QrcodeSupportedFormats.UPC_A,
-            Html5QrcodeSupportedFormats.UPC_E,
-            Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
-          ],
-          scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
-        });
-        qrcode.clear();
-        qrcode
-          .scanFile(imageFile, true)
-          .then((result) => {
-            console.log("QR Code:", result);
-            setReaderQrCheckout(result);
-            verifyVehicle(result);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        // if (!imgCheckout) return;
+        // const base64String = imgCheckout
+        //   .replace("data:", "")
+        //   .replace(/^.+,/, "")
+        //   .replace(/%2F/g, "/")
+        //   .replace(/%2B/g, "+");
+        // const imageFile = createFileFromBase64(
+        //   base64String,
+        //   "checkout.png",
+        //   "image/png"
+        // );
+        // const qrcode = new Html5Qrcode("reader-checkout", {
+        //   qrbox: { width: 250, height: 250 },
+        //   formatsToSupport: [
+        //     Html5QrcodeSupportedFormats.QR_CODE,
+        //     Html5QrcodeSupportedFormats.UPC_A,
+        //     Html5QrcodeSupportedFormats.UPC_E,
+        //     Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+        //   ],
+        //   scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
+        // });
+        // qrcode.clear();
+        // qrcode
+        //   .scanFile(imageFile, true)
+        //   .then((result) => {
+        //     console.log("QR Code:", result);
+        //     setReaderQrCheckout(result);
+        //     verifyVehicle(result);
+        //   })
+        //   .catch((error) => {
+        //     console.log(error);
+        //   });
+        const result = await readQRFromImage(imgCheckout);
+        setReaderQrCheckout(result);
+        verifyVehicle(result);
       } catch (error) {
         console.error(error);
       }
@@ -191,12 +194,72 @@ const Checkout = (props) => {
     return new File([blob], fileName, { type: fileType });
   };
 
+  const readQRFromImage = async (base64Image) => {
+    return new Promise((resolve, reject) => {
+      // Create a new Image object
+      const image = new Image();
+      image.src = base64Image;
+
+      // Wait for the image to load
+      image.onload = async () => {
+        try {
+          // Create a canvas element
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          // Set the canvas size to the image size
+          canvas.width = image.width;
+          canvas.height = image.height;
+
+          // Draw the image on the canvas
+          context.drawImage(image, 0, 0);
+
+          // Get the image data from the canvas
+          const imageData = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          // Decode the QR code from the image data
+          const code = await jsQR(
+            imageData.data,
+            imageData.width,
+            imageData.height
+          );
+
+          // Handle the decoded QR code
+          if (code) {
+            console.log("QR code:", code.data);
+            resolve(code.data);
+          } else {
+            console.log("No QR code found");
+            resolve(null);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      // Handle image load error
+      image.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
   return (
     <div className="flex flex-col w-[50%] h-full justify-start items-center gap-10">
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check out</div>
-        <div className="w-[360px] h-[360px] flex justify-center items-center border-2 border-red-400 rounded-xl">
-          <ImageAntd src={imgCheckout} id="reader-checkout" width={500} />
+        <div className="w-[360px] h-[360px] flex justify-center items-center">
+          <ImageAntd
+            src={imgCheckout}
+            id="reader-checkout"
+            width={360}
+            className=" border-2 border-red-400 rounded-xl"
+          />
         </div>
         <div>
           <span>Vehicle number: </span>
