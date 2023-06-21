@@ -325,12 +325,19 @@ const Checkin = (props) => {
       <div className="flex-1 flex flex-col items-center gap-5">
         <div className=" font-bold text-2xl">Check in</div>
         <div className="w-[360px] h-[360px] flex justify-center items-center">
-          <ImageAntd
-            src={imgCheckin}
-            id="reader"
-            width={360}
-            className=" border-2 border-red-400 rounded-xl"
-          />
+          {imgCheckin?.split("data:image/png;base64,")[1] == "" ? (
+            <div className="w-[360px] h-[280px] border-2 rounded-xl flex justify-center items-center">
+              <p>No QR Code detect</p>
+            </div>
+          ) : (
+            <ImageAntd
+              src={imgCheckin}
+              id="reader"
+              width={360}
+              height={280}
+              className=" border-2 border-red-400 rounded-xl max-h-[360px]"
+            />
+          )}
         </div>
         <div>
           <span>Vehicle number: </span>
