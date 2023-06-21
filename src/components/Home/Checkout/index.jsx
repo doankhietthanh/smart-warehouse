@@ -256,7 +256,7 @@ const Checkout = (props) => {
         <div className="w-[360px] h-[360px] flex justify-center items-center">
           {imgCheckout?.split("data:image/png;base64,")[1] == "" ? (
             <div className="w-[360px] h-[280px] border-2 rounded-xl flex justify-center items-center">
-              <p>No QR Code detect</p>
+              <p>No image detected</p>
             </div>
           ) : (
             <ImageAntd

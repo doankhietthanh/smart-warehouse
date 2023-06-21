@@ -4,6 +4,7 @@ const ACTION_DB = {
   UPDATE_HUMIDITY_THRESHOLD: 2, // Control by web
   OPEN_GATE: 3, // Control by check-in gate
   CLOSE_GATE: 4, // Control by check-out gate
+  WIFI_SETUP: 6, //wifi setup
 };
 
 const UNCHECKED_QR = 255;
