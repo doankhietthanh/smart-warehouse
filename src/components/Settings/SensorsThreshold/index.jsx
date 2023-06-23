@@ -11,18 +11,7 @@ import {
 } from "../../../services/firebase";
 
 import { notification } from "antd";
-
-const ACTION_DB = {
-  NO_ACTION: 0,
-  TEMPERATURE_THRESHOLD: 1,
-  HUMIDITY_THRESHOLD: 2,
-};
-
-const STATUS_UPDATE_THRESHOLD = {
-  NO_UPDATE: 0,
-  WAITTING: 1,
-  UPDATED: 2,
-};
+import { ACTION_DB, STATUS_UPDATE_THRESHOLD } from "../../../utils/constant";
 
 const marksTemperature = {
   0: "0°C",
@@ -48,23 +37,30 @@ const SensorsThreshold = () => {
   const [temperature, setTemperature] = useState([0, 100]);
   const [humidity, setHumidity] = useState([0, 100]);
   const [updateSuccess, setUpdateSucces] = useState(true);
-  const [initRender, setInitRender] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (initRender) {
-      setInitRender(false);
-    }
-  }, [initRender]);
+  const [pushNotification, setPushNotification] = useState(false);
 
   useEffect(() => {
     onValue(ref(database, "threshold"), (snapshot) => {
-      const { status } = snapshot.val();
-      if (status === STATUS_UPDATE_THRESHOLD.UPDATED) {
-        pushNotificationUpdate();
+      const data = snapshot.val();
+
+      console.log(pushNotification);
+
+      if (data.status === STATUS_UPDATE_THRESHOLD.UPDATED) {
+        setPushNotification(true);
+        set(ref(database, "threshold"), {
+          ...data,
+          status: STATUS_UPDATE_THRESHOLD.NO_UPDATE,
+        });
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (pushNotification) {
+      setPushNotification(false);
+      pushNotificationUpdate();
+    }
+  }, [pushNotification]);
 
   const onAfterChangeTemperature = (value) => {
     setTemperature(value);
@@ -76,7 +72,7 @@ const SensorsThreshold = () => {
 
   const updateTemperatureThreshold = () => {
     updateSettingSensors();
-    set(ref(database, "action"), ACTION_DB.TEMPERATURE_THRESHOLD)
+    set(ref(database, "action"), ACTION_DB.UPDATE_TEMPERATURE_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
       })
@@ -99,7 +95,7 @@ const SensorsThreshold = () => {
 
   const updateHumidityThreshold = () => {
     updateSettingSensors();
-    set(ref(database, "action"), ACTION_DB.HUMIDITY_THRESHOLD)
+    set(ref(database, "action"), ACTION_DB.UPDATE_HUMIDITY_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
       })

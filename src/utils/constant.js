@@ -7,6 +7,12 @@ const ACTION_DB = {
   WIFI_SETUP: 6, //wifi setup
 };
 
+const STATUS_UPDATE_THRESHOLD = {
+  NO_UPDATE: 0,
+  WAITTING: 1,
+  UPDATED: 2,
+};
+
 const UNCHECKED_QR = 255;
 
 const COLUMS_TABLE_AT_HOME = [
@@ -45,8 +51,13 @@ const formatTime = (time) => {
   const minute = date.getMinutes();
   const second = date.getSeconds();
 
-  return `${day} ${month} ${year} - ${hour}:${minute}:${second}`;
+  return `${day} ${month} ${year} ${hour}:${minute}:${second}`;
 };
 
-export { ACTION_DB, UNCHECKED_QR, COLUMS_TABLE_AT_HOME };
+export {
+  ACTION_DB,
+  UNCHECKED_QR,
+  COLUMS_TABLE_AT_HOME,
+  STATUS_UPDATE_THRESHOLD,
+};
 export { formatTime };

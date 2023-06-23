@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Home, Login } from "./containers";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,20 @@ import {
 import { signInWithCredential } from "firebase/auth";
 import { auth, GoogleAuthProvider } from "./services/firebase";
 import Vehicle from "./containers/Vehicle";
+import {
+  database,
+  ref,
+  set,
+  onValue,
+  storage,
+  deleteDoc,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  collection,
+} from "./services/firebase";
+import { ACTION_DB } from "./utils/constant";
 
 function App() {
   const tokenStore = localStorage.getItem("token");
@@ -46,6 +60,61 @@ function App() {
       console.log(e);
       dispatch(signInWithGoogleFailure(e.message));
       localStorage.removeItem("token");
+    }
+  };
+
+  // Hanlder with firebase
+
+  // hanlder Alert
+  const [temperatureTemp, setTemperatureTemp] = useState(
+    localStorage.getItem("temperature") || 0
+  );
+  const [humidityTemp, setHumidityTemp] = useState(
+    localStorage.getItem("humidity") || 0
+  );
+
+  useEffect(() => {
+    getAlertSensorFromDB();
+  }, []);
+
+  const getAlertSensorFromDB = async () => {
+    try {
+      const alertRef = ref(database, "notification");
+      onValue(alertRef, (snapshot) => {
+        const data = snapshot.val();
+        const humidity = data.humidity;
+        const temperature = data.temperature;
+
+        if (temperature.currentValue == temperatureTemp) return;
+        else {
+          setTemperatureTemp(temperature.currentValue);
+          localStorage.setItem("temperature", temperature.currentValue);
+          setAlertToStorage("temperature", temperature);
+        }
+
+        if (humidity.currentValue == humidityTemp) return;
+        else {
+          setHumidityTemp(humidity.currentValue);
+          localStorage.setItem("humidity", humidity.currentValue);
+          setAlertToStorage("humidity", humidity);
+        }
+
+        console.log(humidity, temperature);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const setAlertToStorage = (sensorName, data) => {
+    const now = Math.round(new Date().getTime() / 1000).toString();
+    try {
+      setDoc(doc(storage, `alert_${sensorName}`, now), {
+        value: data?.currentValue,
+        type: data?.type,
+      });
+    } catch (e) {
+      console.log(e);
     }
   };
 
