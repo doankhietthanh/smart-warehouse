@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex gap-2 items-start relative h-[calc(100vh-60px)] w-screen p-5">
+      <div className="flex gap-2 items-start relative h-[calc(100vh-60px)] w-screen p-5 overflow-x-hidden">
         <Switch>
           <PrivateRoute path={"/v1/home"}>
             <Welcome />

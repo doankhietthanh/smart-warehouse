@@ -65,10 +65,14 @@ const Welcome = () => {
   };
 
   const onHanlderSendTestMail = async () => {
-    const to = "19119220@student.hcmute.edu.vn";
-    const subject = "Test mail";
-    const hmtl = "<h1>Test mail</h1>";
-    await sendEmail(to, subject, hmtl);
+    const msg = {
+      to: "19119220@student.hcmute.edu.vn",
+      from: "doankhietthanh@gmail.com",
+      subject: "Test Email",
+      text: "Hello, this is a test email sent from ReactJS using SendGrid!",
+    };
+
+    sendEmail(msg.to, msg.from, msg.subject, msg.text);
   };
 
   return (
