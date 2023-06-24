@@ -12,7 +12,7 @@ import { formatTime } from "../../utils/constant";
 
 const calculateContainerHeight = () => {
   const vh = window.innerHeight * 0.01;
-  return vh * 100;
+  return vh * 100 - 20;
 };
 
 const Alert = () => {
@@ -25,14 +25,6 @@ const Alert = () => {
     getAlertTemperatureFromStorage();
     getAlerthumidityFromStorage();
   }, []);
-
-  const onScroll = (e) => {
-    if (
-      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
-      ContainerHeight
-    ) {
-    }
-  };
 
   const getAlertTemperatureFromStorage = async () => {
     try {
@@ -50,7 +42,6 @@ const Alert = () => {
     try {
       const snapshot = await getDocs(collection(storage, "alert_humidity"));
       const data = snapshot.docs.map((doc) => {
-        console.log({ ...doc.data(), time: doc.id });
         return { ...doc.data(), time: doc.id };
       });
       setHumidityList(data);
@@ -80,7 +71,6 @@ const Alert = () => {
               height={ContainerHeight}
               itemHeight={47}
               itemKey="time"
-              onScroll={onScroll}
             >
               {(item) => (
                 <Space
@@ -134,7 +124,6 @@ const Alert = () => {
               height={ContainerHeight}
               itemHeight={47}
               itemKey="time"
-              onScroll={onScroll}
             >
               {(item) => (
                 <Space
