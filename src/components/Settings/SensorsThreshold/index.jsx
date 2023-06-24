@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button, InputNumber, Slider } from "antd";
+import { Button, InputNumber, Slider, Spin } from "antd";
 import {
   storage,
   doc,
   setDoc,
   database,
+  getDoc,
   ref,
   set,
   onValue,
@@ -38,21 +39,25 @@ const SensorsThreshold = () => {
   const [humidity, setHumidity] = useState([0, 100]);
   const [updateSuccess, setUpdateSucces] = useState(true);
   const [pushNotification, setPushNotification] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
 
   useEffect(() => {
     onValue(ref(database, "threshold"), (snapshot) => {
       const data = snapshot.val();
 
-      console.log(pushNotification);
-
       if (data.status === STATUS_UPDATE_THRESHOLD.UPDATED) {
         setPushNotification(true);
+        setLoadingSave(false);
         set(ref(database, "threshold"), {
           ...data,
           status: STATUS_UPDATE_THRESHOLD.NO_UPDATE,
         });
       }
     });
+  }, []);
+
+  useEffect(() => {
+    getThresholdFromStorage();
   }, []);
 
   useEffect(() => {
@@ -71,6 +76,14 @@ const SensorsThreshold = () => {
   };
 
   const updateTemperatureThreshold = () => {
+    if (temperature[0] > temperature[1]) {
+      notification.error({
+        message: "Error",
+        description: "Min temperature must be less than max temperature",
+      });
+      return;
+    }
+    setLoadingSave(true);
     updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_TEMPERATURE_THRESHOLD)
       .then(() => {
@@ -94,6 +107,14 @@ const SensorsThreshold = () => {
   };
 
   const updateHumidityThreshold = () => {
+    if (humidity[0] > humidity[1]) {
+      notification.error({
+        message: "Error",
+        description: "Min humidity must be less than max humidity",
+      });
+      return;
+    }
+    setLoadingSave(true);
     updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_HUMIDITY_THRESHOLD)
       .then(() => {
@@ -136,6 +157,27 @@ const SensorsThreshold = () => {
         });
     } catch (e) {
       setUpdateSucces(false);
+    }
+  };
+
+  const getThresholdFromStorage = () => {
+    try {
+      const docRef = doc(storage, "settings", "sensors");
+      getDoc(docRef)
+        .then((doc) => {
+          if (doc.exists()) {
+            setTemperature([
+              doc.data().temperature.min,
+              doc.data().temperature.max,
+            ]);
+            setHumidity([doc.data().humidity.min, doc.data().humidity.max]);
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -193,9 +235,13 @@ const SensorsThreshold = () => {
             />
           </div>
           <div className="flex flex-col justify-center items-center p-10">
-            <Button type="primary" onClick={updateTemperatureThreshold}>
-              Save
-            </Button>
+            {loadingSave ? (
+              <Spin />
+            ) : (
+              <Button type="primary" onClick={updateTemperatureThreshold}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -215,7 +261,6 @@ const SensorsThreshold = () => {
             <InputNumber
               min={0}
               max={100}
-              defaultValue={80}
               value={humidity[0]}
               onChange={(value) => {
                 setHumidity([value, humidity[1]]);
@@ -227,7 +272,6 @@ const SensorsThreshold = () => {
             <InputNumber
               min={0}
               max={100}
-              defaultValue={100}
               value={humidity[1]}
               onChange={(value) => {
                 setHumidity([humidity[0], value]);
@@ -235,9 +279,13 @@ const SensorsThreshold = () => {
             />
           </div>
           <div className="flex flex-col justify-center items-center p-10">
-            <Button type="primary" onClick={updateHumidityThreshold}>
-              Save
-            </Button>
+            {loadingSave ? (
+              <Spin />
+            ) : (
+              <Button type="primary" onClick={updateHumidityThreshold}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       </div>
