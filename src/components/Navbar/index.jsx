@@ -44,9 +44,10 @@ const Navbar = () => {
 
   return (
     <div className="bg-white w-screen shadow-md h-[60px] flex justify-center items-center sticky top-0 z-10">
-      <div className="container flex mx-auto justify-between items-center">
-        <div className="flex gap-11 ">
-          <h1 className="text-4xl font-thin py-2">Logo</h1>
+      <div className="w-full  h-full container flex mx-auto justify-between items-center">
+        <div className="w-full h-full flex gap-11 ">
+          {/* <h1 className="text-4xl font-thin py-2">Logo</h1> */}
+          <img src="/logo.png" alt="logo" className="w-auto h-full" />
           <Menu />
         </div>
         <div className="flex justify-center items-center gap-2 cursor-pointer">

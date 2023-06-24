@@ -9,6 +9,8 @@ import {
   Checkbox,
   Input,
   Select,
+  Skeleton,
+  Spin,
 } from "antd";
 import { EnvironmentOutlined, MailOutlined } from "@ant-design/icons";
 import {
@@ -36,6 +38,7 @@ const ContainerHeight = calculateContainerHeight();
 const History = () => {
   const [vehicleList, setVehicleList] = useState([]);
   const [vehicleListBackup, setVehicleListBackup] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getVehicleListFromStorage();
@@ -55,6 +58,7 @@ const History = () => {
       vehiclesList.sort((a, b) => b?.time - a?.time);
       setVehicleList(vehiclesList);
       setVehicleListBackup(vehiclesList);
+      setLoading(false);
     } catch (e) {
       notification.error({
         message: "Error",
@@ -117,57 +121,61 @@ const History = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="flex-1 h-full w-full flex justify-center items-center">
-        <List className="w-full h-full">
-          <VirtualList
-            data={vehicleList}
-            height={ContainerHeight}
-            itemHeight={47}
-            itemKey="time"
-            onScroll={onScroll}
-          >
-            {(item) => (
-              <List.Item
-                className={`${
-                  item?.type === "checkin" ? "bg-gray-200" : "bg-red-200"
-                }
+        {loading ? (
+          <Spin size="large" />
+        ) : (
+          <List className="w-full h-full">
+            <VirtualList
+              data={vehicleList}
+              height={ContainerHeight}
+              itemHeight={47}
+              itemKey="time"
+              onScroll={onScroll}
+            >
+              {(item) => (
+                <List.Item
+                  className={`${
+                    item?.type === "checkin" ? "bg-gray-200" : "bg-red-200"
+                  }
                 flex justify-between items-center rounded-xl m-2`}
-                key={item?.vehicleNumber}
-              >
-                <List.Item.Meta
-                  className="flex justify-center items-center ml-5"
-                  avatar={
-                    <Avatar
-                      style={{
-                        backgroundColor: randomColor(),
-                      }}
-                    >
-                      {item?.username[0]}
-                    </Avatar>
-                  }
-                  title={
-                    <div>
-                      <div className="font-bold text-xl">
-                        {item?.vehicleNumber}
-                      </div>
-                    </div>
-                  }
-                  description={
-                    <div>
-                      <div>{item?.username}</div>
+                  key={item?.vehicleNumber}
+                >
+                  <List.Item.Meta
+                    className="flex justify-center items-center ml-5"
+                    avatar={
+                      <Avatar
+                        style={{
+                          backgroundColor: randomColor(),
+                        }}
+                      >
+                        {item?.username[0]}
+                      </Avatar>
+                    }
+                    title={
                       <div>
-                        <MailOutlined /> {item?.email}
+                        <div className="font-bold text-xl">
+                          {item?.vehicleNumber}
+                        </div>
                       </div>
-                      <div className="font-bold">
-                        <EnvironmentOutlined /> Gate {item?.gate}
+                    }
+                    description={
+                      <div>
+                        <div>{item?.username}</div>
+                        <div>
+                          <MailOutlined /> {item?.email}
+                        </div>
+                        <div className="font-bold">
+                          <EnvironmentOutlined /> Gate {item?.gate}
+                        </div>
                       </div>
-                    </div>
-                  }
-                />
-                <div className="mr-5">{formatTime(item?.time * 1000)}</div>
-              </List.Item>
-            )}
-          </VirtualList>
-        </List>
+                    }
+                  />
+                  <div className="mr-5">{formatTime(item?.time * 1000)}</div>
+                </List.Item>
+              )}
+            </VirtualList>
+          </List>
+        )}
       </div>
       <div className="w-[250px] text-green-500 pl-5">
         <Form onFinish={onSearchByVehicleNumber}>

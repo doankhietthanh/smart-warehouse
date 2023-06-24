@@ -18,16 +18,12 @@ import {
   collection,
 } from "../../../services/firebase";
 import jsQR from "jsqr";
-import { Image as ImageAntd } from "antd";
+import { Image as ImageAntd, Skeleton } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Space, Table, Tag, notification, message } from "antd";
-import {
-  Html5Qrcode,
-  Html5QrcodeSupportedFormats,
-  Html5QrcodeScanType,
-} from "html5-qrcode";
+import { Table, Spin } from "antd";
 
 const Checkout = (props) => {
+  const [loading, setLoading] = useState(true);
   const [readerQrCheckout, setReaderQrCheckout] = useState(null);
   const [imgCheckout, setImgCheckout] = useState(null);
   const [verified, setVerified] = useState(false);
@@ -42,38 +38,6 @@ const Checkout = (props) => {
 
     const loadImageCheckout = async () => {
       try {
-        // if (!imgCheckout) return;
-        // const base64String = imgCheckout
-        //   .replace("data:", "")
-        //   .replace(/^.+,/, "")
-        //   .replace(/%2F/g, "/")
-        //   .replace(/%2B/g, "+");
-        // const imageFile = createFileFromBase64(
-        //   base64String,
-        //   "checkout.png",
-        //   "image/png"
-        // );
-        // const qrcode = new Html5Qrcode("reader-checkout", {
-        //   qrbox: { width: 250, height: 250 },
-        //   formatsToSupport: [
-        //     Html5QrcodeSupportedFormats.QR_CODE,
-        //     Html5QrcodeSupportedFormats.UPC_A,
-        //     Html5QrcodeSupportedFormats.UPC_E,
-        //     Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
-        //   ],
-        //   scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
-        // });
-        // qrcode.clear();
-        // qrcode
-        //   .scanFile(imageFile, true)
-        //   .then((result) => {
-        //     console.log("QR Code:", result);
-        //     setReaderQrCheckout(result);
-        //     verifyVehicle(result);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
         const result = await readQRFromImage(imgCheckout);
         setReaderQrCheckout(result);
         verifyVehicle(result);
@@ -141,6 +105,8 @@ const Checkout = (props) => {
     );
 
     if (vehicle) {
+      setLoading(false);
+
       if (!gateListCheckAgain) {
         setVehicleVerified(vehicle);
         setVerified(false);
@@ -286,13 +252,17 @@ const Checkout = (props) => {
             <span className="text-xl">{messageError}</span>
           </div>
         )}
-        <Table
-          columns={COLUMS_TABLE_AT_HOME}
-          dataSource={dataVehicleCheckout}
-          pagination={{
-            position: ["none", "none"],
-          }}
-        />
+        {loading ? (
+          <Skeleton active />
+        ) : (
+          <Table
+            columns={COLUMS_TABLE_AT_HOME}
+            dataSource={dataVehicleCheckout}
+            pagination={{
+              position: ["none", "none"],
+            }}
+          />
+        )}
       </div>
     </div>
   );

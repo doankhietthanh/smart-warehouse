@@ -20,15 +20,9 @@ import {
 import jsQR from "jsqr";
 import { Image as ImageAntd } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Space, Table, Tag, notification, message } from "antd";
-import {
-  Html5Qrcode,
-  Html5QrcodeScanner,
-  Html5QrcodeSupportedFormats,
-  Html5QrcodeScanType,
-} from "html5-qrcode";
-
+import { Table, notification, Spin, Skeleton } from "antd";
 const Checkin = (props) => {
+  const [loading, setLoading] = useState(true);
   const [readerQrCheckin, setReaderQrCheckin] = useState(null);
   const [imgCheckin, setImgCheckin] = useState(null);
   const [verified, setVerified] = useState(false);
@@ -53,47 +47,6 @@ const Checkin = (props) => {
 
     const loadImageCheckin = async () => {
       try {
-        // if (!imgCheckin) return;
-        // const base64String = imgCheckin
-        //   .replace("data:", "")
-        //   .replace(/^.+,/, "")
-        //   .replace(/%2F/g, "/")
-        //   .replace(/%2B/g, "+");
-
-        // console.log(base64String);
-
-        // const imageFile = createFileFromBase64(
-        //   base64String,
-        //   "checkin.png",
-        //   "image/png"
-        // );
-        // const qrcode = new Html5Qrcode("reader", {
-        //   qrbox: { width: 250, height: 250 },
-        //   // formatsToSupport: [
-        //   //   Html5QrcodeSupportedFormats.QR_CODE,
-        //   //   Html5QrcodeSupportedFormats.UPC_A,
-        //   //   Html5QrcodeSupportedFormats.UPC_E,
-        //   //   Html5QrcodeSupportedFormats.EAN_8,
-        //   //   Html5QrcodeSupportedFormats.EAN_13,
-        //   //   Html5QrcodeSupportedFormats.CODE_128,
-        //   //   Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
-        //   // ],
-        //   scansupportedScanTypesType: [Html5QrcodeScanType.SCAN_TYPE_FILE],
-        // });
-
-        // qrcode.clear();
-
-        // qrcode
-        //   .scanFile(imageFile, true)
-        //   .then((result) => {
-        //     console.log("QR Code:", result);
-        //     setReaderQrCheckin(result);
-        //     verifyVehicle(result);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
-
         const result = await readQRFromImage(imgCheckin);
         setReaderQrCheckin(result);
         verifyVehicle(result);
@@ -161,7 +114,7 @@ const Checkin = (props) => {
     );
 
     if (vehicle) {
-      setVerified(true);
+      setLoading(false);
 
       if (gateListCheckAgain) {
         setVehicleVerified(vehicle);
@@ -170,13 +123,8 @@ const Checkin = (props) => {
         return;
       }
 
+      setVerified(true);
       setVehicleVerified({ ...vehicle, gate: gateEmpty[0]?.toString() });
-
-      // if (gateEmpty.length === 0) {
-      //   setMessageError("Gate is full");
-      //   // setVerified(false);
-      //   return;
-      // }
 
       const date = new Date();
       const time = Math.floor(date.getTime() / 1000);
@@ -190,8 +138,6 @@ const Checkin = (props) => {
         gate: gateEmpty[0].toString(), //get first gate empty
         type: "checkin",
       };
-
-      console.log(dataStorage);
 
       setDoc(doc(storage, "history", time.toString()), dataStorage);
       setDoc(doc(storage, "gates", gateEmpty[0]?.toString()), dataStorage);
@@ -243,26 +189,6 @@ const Checkin = (props) => {
       set(ref(database, "gate/gateIsFull"), Number(0));
     }
     setGateEmpty(gateEmpty);
-  };
-
-  const createFileFromBase64 = (base64String, fileName, fileType) => {
-    const byteCharacters = atob(base64String);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-      const slice = byteCharacters.slice(offset, offset + 512);
-      const byteNumbers = new Array(slice.length);
-
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: fileType });
-    return new File([blob], fileName, { type: fileType });
   };
 
   const readQRFromImage = async (base64Image) => {
@@ -357,13 +283,17 @@ const Checkin = (props) => {
             <span className="text-xl">{messageError}</span>
           </div>
         )}
-        <Table
-          columns={COLUMS_TABLE_AT_HOME}
-          dataSource={dataVehicleCheckin}
-          pagination={{
-            position: ["none", "none"],
-          }}
-        />
+        {loading ? (
+          <Skeleton active />
+        ) : (
+          <Table
+            columns={COLUMS_TABLE_AT_HOME}
+            dataSource={dataVehicleCheckin}
+            pagination={{
+              position: ["none", "none"],
+            }}
+          />
+        )}
       </div>
     </div>
   );
