@@ -35,6 +35,13 @@ const Login = () => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
+        const userData = {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", token);
         dispatch(
           signInWithGoogleSuccess({

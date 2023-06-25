@@ -44,10 +44,6 @@ const History = () => {
     getVehicleListFromStorage();
   }, []);
 
-  useEffect(() => {
-    console.log(vehicleList);
-  }, [vehicleList]);
-
   const getVehicleListFromStorage = async () => {
     try {
       const vehiclesRef = collection(storage, "history");
@@ -81,7 +77,6 @@ const History = () => {
     const vehicles = vehicleListBackup.filter(
       (vehicle) => vehicle?.vehicleNumber === value
     );
-    console.log(vehicles);
     if (vehicles) {
       setVehicleList(vehicles);
     } else {
@@ -97,7 +92,6 @@ const History = () => {
     const vehicles = vehicleListBackup.filter(
       (vehicle) => vehicle?.gate == value
     );
-    console.log(vehicles);
 
     if (vehicles) {
       setVehicleList(vehicles);

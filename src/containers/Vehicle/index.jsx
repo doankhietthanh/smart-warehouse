@@ -3,6 +3,7 @@ import { Button, Checkbox, Form, Input, QRCode } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { storage, doc, setDoc } from "../../services/firebase";
 import { notification } from "antd";
+import emailjs from "@emailjs/browser";
 
 const Vehicle = () => {
   const [qrcode, setQrcode] = useState("");
@@ -17,11 +18,14 @@ const Vehicle = () => {
     const vehicleNumber = isInternational
       ? `INA${values.vehicleNumber}`
       : `VN${values.vehicleNumber}`;
-    updateVehicleToStorage({
+
+    const vehicleData = {
       ...values,
       vehicleNumber: vehicleNumber,
-    });
+    };
+    updateVehicleToStorage(vehicleData);
     setQrcode(vehicleNumber);
+    sendRegisterVehicleEmail(vehicleData);
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
@@ -71,6 +75,24 @@ const Vehicle = () => {
       a.click();
       document.body.removeChild(a);
     }
+  };
+
+  const sendRegisterVehicleEmail = (data) => {
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TENMPLETE_REGISTER_VEHICLE_ID,
+        data,
+        import.meta.env.VITE_EMAILJS_USER_PUBLIC_KEY
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
   };
 
   return (

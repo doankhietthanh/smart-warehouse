@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Home, Login } from "./containers";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   signInWithGoogleStart,
   signInWithGoogleFailure,
@@ -13,17 +13,13 @@ import Vehicle from "./containers/Vehicle";
 import {
   database,
   ref,
-  set,
   onValue,
   storage,
-  deleteDoc,
   doc,
   setDoc,
-  getDoc,
-  getDocs,
-  collection,
 } from "./services/firebase";
-import { ACTION_DB } from "./utils/constant";
+import emailjs from "@emailjs/browser";
+import { formatTime } from "./utils/constant";
 
 function App() {
   const tokenStore = localStorage.getItem("token");
@@ -98,8 +94,6 @@ function App() {
           localStorage.setItem("humidity", humidity.currentValue);
           setAlertToStorage("humidity", humidity);
         }
-
-        console.log(humidity, temperature);
       });
     } catch (e) {
       console.log(e);
@@ -113,9 +107,42 @@ function App() {
         value: data?.currentValue,
         type: data?.type,
       });
+      sendAlertEmail(sensorName, data, formatTime(now * 1000));
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const sendAlertEmail = (sensorName, data, time) => {
+    let typeAlert = "";
+    if (data?.type == "upper") typeAlert = "high";
+    else if (data?.type == "lower") typeAlert = "low";
+
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    const dataEmail = {
+      to_email: userData?.email,
+      to_name: userData?.displayName,
+      time: time,
+      sensorName: sensorName.charAt(0).toUpperCase() + sensorName.slice(1),
+      typeAlert: typeAlert,
+      value: data?.currentValue,
+    };
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TENMPLETE_ALERT_ID,
+        dataEmail,
+        import.meta.env.VITE_EMAILJS_USER_PUBLIC_KEY
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
   };
 
   return (

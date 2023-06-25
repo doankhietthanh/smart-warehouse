@@ -16,7 +16,6 @@ import {
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
 import { Button, notification } from "antd";
-import { sendEmail } from "../../services/mail";
 
 const Welcome = () => {
   const [vehicleList, setVehicleList] = useState([]);
@@ -64,17 +63,6 @@ const Welcome = () => {
     set(ref(database, "gate/gateIsFull"), Number(0));
   };
 
-  const onHanlderSendTestMail = async () => {
-    const msg = {
-      to: "19119220@student.hcmute.edu.vn",
-      from: "doankhietthanh@gmail.com",
-      subject: "Test Email",
-      text: "Hello, this is a test email sent from ReactJS using SendGrid!",
-    };
-
-    sendEmail(msg.to, msg.from, msg.subject, msg.text);
-  };
-
   return (
     <div className="w-full h-full flex flex-col gap-5 justify-center items-center">
       <Button
@@ -84,7 +72,6 @@ const Welcome = () => {
       >
         Clear all gate
       </Button>
-      <Button onClick={onHanlderSendTestMail}>Send test mail</Button>
       <div className="w-full h-full flex flex-row">
         <Checkin vehicleList={vehicleList} />
         <Checkout vehicleList={vehicleList} />
