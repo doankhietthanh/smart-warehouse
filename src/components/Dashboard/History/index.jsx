@@ -26,6 +26,7 @@ import {
   collection,
 } from "../../../services/firebase";
 import { formatTime } from "../../../utils/constant";
+import Vehicle from "./../../../containers/Vehicle/index";
 
 const { Search } = Input;
 
@@ -38,7 +39,14 @@ const ContainerHeight = calculateContainerHeight();
 const History = () => {
   const [vehicleList, setVehicleList] = useState([]);
   const [vehicleListBackup, setVehicleListBackup] = useState([]);
-  const [valueListSearch, setValueListSearch] = useState([]);
+  const [searchTypes, setSearchTypes] = useState({
+    vehicleNumber: "",
+    gate: "",
+    vietnam: false,
+    international: false,
+    checkin: false,
+    checkout: false,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -71,70 +79,66 @@ const History = () => {
   };
 
   const onSearchVehicle = () => {
-    console.log(
-      "🚀 ~ file: index.jsx ~ line 78 ~ onSearchVehicle ~ valueListSearch"
-    );
+    setVehicleList(vehicleListBackup);
+
+    console.log(searchTypes);
+
+    if (
+      !searchTypes.vehicleNumber &&
+      !searchTypes.gate &&
+      !searchTypes.vietnam &&
+      !searchTypes.international &&
+      !searchTypes.checkin &&
+      !searchTypes.checkout
+    )
+      return;
+
+    let vehicles = vehicleListBackup;
+
+    if (searchTypes.vehicleNumber) {
+      vehicles = vehicles.filter(
+        (vehicle) => vehicle?.vehicleNumber === searchTypes.vehicleNumber
+      );
+    }
+
+    if (searchTypes.gate) {
+      vehicles = vehicles.filter(
+        (vehicle) => vehicle?.gate == searchTypes.gate
+      );
+    }
+
+    if (!searchTypes.vietnam || !searchTypes.international) {
+      if (searchTypes.vietnam) {
+        vehicles = vehicles.filter(
+          (vehicle) => vehicle?.international == false
+        );
+      }
+
+      if (searchTypes.international) {
+        vehicles = vehicles.filter((vehicle) => vehicle?.international == true);
+      }
+    }
+
+    if (!searchTypes.checkin || !searchTypes.checkout) {
+      if (searchTypes.checkin) {
+        vehicles = vehicles.filter((vehicle) => vehicle?.type == "checkin");
+      }
+
+      if (searchTypes.checkout) {
+        vehicles = vehicles.filter((vehicle) => vehicle?.type == "checkout");
+      }
+    }
+
+    if (vehicles) {
+      setVehicleList(vehicles);
+    } else {
+      setVehicleList([]);
+    }
   };
 
   useEffect(() => {
     onSearchVehicle();
-  }, [valueListSearch]);
-
-  const onSearchByVehicleNumber = (value) => {
-    // setVehicleList(vehicleListBackup);
-
-    if (!value) return;
-    setValueListSearch([
-      ...valueListSearch,
-      {
-        type: "vehicleNumber",
-        value: value,
-      },
-    ]);
-
-    // const vehicles = vehicleListBackup.filter(
-    //   (vehicle) => vehicle?.vehicleNumber === value
-    // );
-    // if (vehicles) {
-    //   setVehicleList(vehicles);
-    // } else {
-    //   setVehicleList([]);
-    // }
-  };
-
-  const onSearchByGate = (value) => {
-    // setVehicleList(vehicleListBackup);
-
-    if (!value) return;
-    setValueListSearch([
-      ...valueListSearch,
-      {
-        type: "gate",
-        value: value,
-      },
-    ]);
-
-    // const vehicles = vehicleListBackup.filter(
-    //   (vehicle) => vehicle?.gate == value
-    // );
-
-    // if (vehicles) {
-    //   setVehicleList(vehicles);
-    // } else {
-    //   setVehicleList([]);
-    // }
-  };
-
-  const onSearchByLocation = (value) => {
-    if (!value) return;
-    setValueListSearch([
-      ...valueListSearch,
-      {
-        type: "location",
-        value: value,
-      },
-    ]);
-  };
+  }, [searchTypes]);
 
   const randomColor = () => {
     const colors = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
@@ -201,23 +205,33 @@ const History = () => {
         )}
       </div>
       <div className="w-[250px] text-green-500 pl-5">
-        <Form onFinish={onSearchByVehicleNumber}>
+        <Form>
           <Form.Item>
             <Search
               placeholder="Search by vehicle number"
               className="rounded-xl"
               allowClear
-              onSearch={onSearchByVehicleNumber}
+              onSearch={(value) => {
+                setSearchTypes({
+                  ...searchTypes,
+                  vehicleNumber: value,
+                });
+              }}
             />
           </Form.Item>
         </Form>
-        <Form onFinish={onSearchByGate}>
+        <Form>
           <Form.Item>
             <Select
               placeholder="Select a gate"
               className="rounded-xl"
               allowClear
-              onChange={onSearchByGate}
+              onChange={(value) => {
+                setSearchTypes({
+                  ...searchTypes,
+                  gate: value,
+                });
+              }}
             >
               <Select.Option value="1">Gate 1</Select.Option>
               <Select.Option value="2">Gate 2</Select.Option>
@@ -225,15 +239,33 @@ const History = () => {
             </Select>
           </Form.Item>
         </Form>
-        <Form onFinish={onSearchByLocation}>
+        <Form>
           <div className="flex flex-col gap-2">
             <label>Location</label>
             <div className="flex">
               <Form.Item>
-                <Checkbox>Vietnam</Checkbox>
+                <Checkbox
+                  onChange={(e) => {
+                    setSearchTypes({
+                      ...searchTypes,
+                      vietnam: e.target.checked,
+                    });
+                  }}
+                >
+                  Vietnam
+                </Checkbox>
               </Form.Item>
               <Form.Item>
-                <Checkbox>International</Checkbox>
+                <Checkbox
+                  onChange={(e) => {
+                    setSearchTypes({
+                      ...searchTypes,
+                      international: e.target.checked,
+                    });
+                  }}
+                >
+                  International
+                </Checkbox>
               </Form.Item>
             </div>
           </div>
@@ -243,9 +275,25 @@ const History = () => {
             <label>Status</label>
             <div className="flex">
               <Form.Item>
-                <Checkbox>Checkin</Checkbox>
+                <Checkbox
+                  onChange={(e) => {
+                    setSearchTypes({
+                      ...searchTypes,
+                      checkin: e.target.checked,
+                    });
+                  }}
+                >
+                  Checkin
+                </Checkbox>
               </Form.Item>
-              <Form.Item>
+              <Form.Item
+                onChange={(e) => {
+                  setSearchTypes({
+                    ...searchTypes,
+                    checkout: e.target.checked,
+                  });
+                }}
+              >
                 <Checkbox>Checkout</Checkbox>
               </Form.Item>
             </div>
