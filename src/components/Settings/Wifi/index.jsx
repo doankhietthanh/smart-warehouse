@@ -1,17 +1,6 @@
 import React from "react";
-import { Button, Checkbox, Form, Input, notification } from "antd";
-import {
-  database,
-  ref,
-  set,
-  onValue,
-  storage,
-  deleteDoc,
-  doc,
-  setDoc,
-  getDocs,
-  collection,
-} from "../../../services/firebase";
+import { Button, Form, Input, notification } from "antd";
+import { database, ref, set } from "../../../services/firebase";
 import { ACTION_DB } from "../../../utils/constant";
 
 const Wifi = () => {
