@@ -38,6 +38,7 @@ const ContainerHeight = calculateContainerHeight();
 const History = () => {
   const [vehicleList, setVehicleList] = useState([]);
   const [vehicleListBackup, setVehicleListBackup] = useState([]);
+  const [valueListSearch, setValueListSearch] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,43 +70,71 @@ const History = () => {
       ContainerHeight;
   };
 
+  const onSearchVehicle = () => {
+    console.log(
+      "🚀 ~ file: index.jsx ~ line 78 ~ onSearchVehicle ~ valueListSearch"
+    );
+  };
+
+  useEffect(() => {
+    onSearchVehicle();
+  }, [valueListSearch]);
+
   const onSearchByVehicleNumber = (value) => {
-    setVehicleList(vehicleListBackup);
+    // setVehicleList(vehicleListBackup);
 
     if (!value) return;
+    setValueListSearch([
+      ...valueListSearch,
+      {
+        type: "vehicleNumber",
+        value: value,
+      },
+    ]);
 
-    const vehicles = vehicleListBackup.filter(
-      (vehicle) => vehicle?.vehicleNumber === value
-    );
-    if (vehicles) {
-      setVehicleList(vehicles);
-    } else {
-      setVehicleList([]);
-    }
+    // const vehicles = vehicleListBackup.filter(
+    //   (vehicle) => vehicle?.vehicleNumber === value
+    // );
+    // if (vehicles) {
+    //   setVehicleList(vehicles);
+    // } else {
+    //   setVehicleList([]);
+    // }
   };
 
   const onSearchByGate = (value) => {
-    setVehicleList(vehicleListBackup);
+    // setVehicleList(vehicleListBackup);
 
     if (!value) return;
+    setValueListSearch([
+      ...valueListSearch,
+      {
+        type: "gate",
+        value: value,
+      },
+    ]);
 
-    const vehicles = vehicleListBackup.filter(
-      (vehicle) => vehicle?.gate == value
-    );
+    // const vehicles = vehicleListBackup.filter(
+    //   (vehicle) => vehicle?.gate == value
+    // );
 
-    if (vehicles) {
-      setVehicleList(vehicles);
-    } else {
-      setVehicleList([]);
-    }
+    // if (vehicles) {
+    //   setVehicleList(vehicles);
+    // } else {
+    //   setVehicleList([]);
+    // }
   };
 
-  // const onSearchByLocation = (value) => {
-  //   const vehicle = vehicleList.find(
-  //     (vehicle) => vehicle.location === value
-  //   );
-  //   if (vehicle) {
-  //     setVehicleList([vehicle]);
+  const onSearchByLocation = (value) => {
+    if (!value) return;
+    setValueListSearch([
+      ...valueListSearch,
+      {
+        type: "location",
+        value: value,
+      },
+    ]);
+  };
 
   const randomColor = () => {
     const colors = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
@@ -196,7 +225,7 @@ const History = () => {
             </Select>
           </Form.Item>
         </Form>
-        <Form onFinish={() => {}}>
+        <Form onFinish={onSearchByLocation}>
           <div className="flex flex-col gap-2">
             <label>Location</label>
             <div className="flex">
