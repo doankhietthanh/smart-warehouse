@@ -85,7 +85,6 @@ const SensorsThreshold = () => {
       return;
     }
     setLoadingSave(true);
-    //updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_TEMPERATURE_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
@@ -116,7 +115,6 @@ const SensorsThreshold = () => {
       return;
     }
     setLoadingSave(true);
-    //updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_HUMIDITY_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
@@ -139,7 +137,6 @@ const SensorsThreshold = () => {
   };
 
   const updateSettingSensors = () => {
-    console.log(temperature, humidity);
     try {
       setDoc(doc(storage, "settings", "sensors"), {
         temperature: {
