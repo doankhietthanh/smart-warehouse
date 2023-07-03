@@ -48,13 +48,14 @@ const SensorsThreshold = () => {
       if (data.status === STATUS_UPDATE_THRESHOLD.UPDATED) {
         setPushNotification(true);
         setLoadingSave(false);
+        updateSettingSensors();
         set(ref(database, "threshold"), {
           ...data,
           status: STATUS_UPDATE_THRESHOLD.NO_UPDATE,
         });
       }
     });
-  }, []);
+  }, [temperature, humidity]);
 
   useEffect(() => {
     getThresholdFromStorage();
@@ -84,7 +85,7 @@ const SensorsThreshold = () => {
       return;
     }
     setLoadingSave(true);
-    updateSettingSensors();
+    //updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_TEMPERATURE_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
@@ -115,7 +116,7 @@ const SensorsThreshold = () => {
       return;
     }
     setLoadingSave(true);
-    updateSettingSensors();
+    //updateSettingSensors();
     set(ref(database, "action"), ACTION_DB.UPDATE_HUMIDITY_THRESHOLD)
       .then(() => {
         setUpdateSucces(true);
@@ -138,6 +139,7 @@ const SensorsThreshold = () => {
   };
 
   const updateSettingSensors = () => {
+    console.log(temperature, humidity);
     try {
       setDoc(doc(storage, "settings", "sensors"), {
         temperature: {
