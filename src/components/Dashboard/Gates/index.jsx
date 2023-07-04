@@ -69,7 +69,6 @@ const Gates = () => {
   const handleGateClick = (id) => {
     gates.forEach((gate) => {
       if (gate.gate == id) {
-        console.log(gate);
         setGateSelected(gate);
       }
     });

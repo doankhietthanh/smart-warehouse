@@ -81,8 +81,6 @@ const History = () => {
   const onSearchVehicle = () => {
     setVehicleList(vehicleListBackup);
 
-    console.log(searchTypes);
-
     if (
       !searchTypes.vehicleNumber &&
       !searchTypes.gate &&

@@ -83,7 +83,6 @@ const VehicleList = () => {
   };
 
   const deleteVehicle = async (vehicleNumber) => {
-    console.log(vehicleNumber);
     try {
       await deleteDoc(doc(storage, "vehicles", vehicleNumber))
         .then(() => {

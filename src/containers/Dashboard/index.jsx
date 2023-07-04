@@ -29,7 +29,6 @@ const Dashboard = () => {
   const [layout, setLayout] = useState("history");
 
   const hanlderClickMenu = (item) => {
-    console.log(item.key);
     setLayout(item.key);
   };
 

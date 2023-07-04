@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import { storage, doc, setDoc } from "../../../../services/firebase";
 import { notification } from "antd";
@@ -8,7 +8,6 @@ const EditVehicle = (props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log(props.vehicle);
     setVehicle(props.vehicle);
     form.setFieldsValue(props.vehicle);
   }, [props.vehicle]);
@@ -16,7 +15,7 @@ const EditVehicle = (props) => {
   useEffect(() => {
     console.log(vehicle);
   }, [vehicle]);
-  
+
   const onFinish = (values) => {
     console.log("Success:", values);
     updateVehicleToStorage(values);
@@ -80,13 +79,12 @@ const EditVehicle = (props) => {
           span: 16,
         }}
       >
-        <Checkbox disabled >International</Checkbox>
+        <Checkbox disabled>International</Checkbox>
       </Form.Item>
 
       <Form.Item
         label="Number"
         name="vehicleNumber"
-
         rules={[
           {
             required: true,
@@ -94,16 +92,12 @@ const EditVehicle = (props) => {
           },
         ]}
       >
-        <Input
-          disabled
-          placeholder="Vehicle number"
-        />
+        <Input disabled placeholder="Vehicle number" />
       </Form.Item>
 
       <Form.Item
         label="Username"
         name="username"
-
         rules={[
           {
             required: true,
@@ -111,8 +105,7 @@ const EditVehicle = (props) => {
           },
         ]}
       >
-        <Input
-        placeholder="User name"/>
+        <Input placeholder="User name" />
       </Form.Item>
 
       <Form.Item
@@ -128,17 +121,16 @@ const EditVehicle = (props) => {
         <Input placeholder="Email" type="email" />
       </Form.Item>
 
-    
       <Form.Item
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
+        wrapperCol={{
+          offset: 8,
+          span: 16,
+        }}
+      >
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Form.Item>
     </Form>
   );
 };
