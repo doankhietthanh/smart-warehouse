@@ -32,6 +32,7 @@ const Checkin = (props) => {
 
   const [gateEmpty, setGateEmpty] = useState([]);
   const [totalGate, setTotalGate] = useState(3);
+  const [gateProposed, setGateProposed] = useState(null);
 
   const [messageError, setMessageError] = useState("");
 
@@ -39,7 +40,24 @@ const Checkin = (props) => {
     onValue(ref(database, "gate/totalGate"), (snapshot) => {
       setTotalGate(snapshot.val());
     });
-  }, []);
+
+    onValue(ref(database, "hardware/position"), (snapshot) => {
+      const data = snapshot.val();
+      const gateAccpectedStatus = data[gateProposed?.gate];
+
+      if (gateAccpectedStatus == 1) {
+        setDoc(
+          doc(storage, "history", gateProposed?.time.toString()),
+          gateProposed
+        );
+        setDoc(doc(storage, "gates", gateEmpty[0]?.toString()), gateProposed);
+        setDoc(
+          doc(storage, "vehicles", gateProposed?.vehicleNumber),
+          gateProposed
+        );
+      }
+    });
+  }, [gateProposed]);
 
   useEffect(() => {
     getImageCheckinFromDB();
@@ -139,9 +157,8 @@ const Checkin = (props) => {
         type: "checkin",
       };
 
-      setDoc(doc(storage, "history", time.toString()), dataStorage);
-      setDoc(doc(storage, "gates", gateEmpty[0]?.toString()), dataStorage);
-      setDoc(doc(storage, "vehicles", vehicle?.vehicleNumber), dataStorage);
+      setGateProposed(dataStorage);
+
       setTimeVehicleCheckin(formatTime(date.getTime()));
     } else {
       setVerified(false);

@@ -36,15 +36,12 @@ const Gates = () => {
         color: "bg-green-500",
       });
     }
-    console.log(gatesColor);
 
     if (gateUsed.length !== 0) {
       gateUsed.forEach((id) => {
         const index = gatesColor.findIndex((gate) => {
-          console.log(gate.gate, id);
           return gate.gate == id;
         });
-        console.log(index);
         if (index !== -1) {
           gatesColor[index].color = "bg-red-500";
         }
@@ -62,8 +59,6 @@ const Gates = () => {
         gateUsed.push(doc.id);
         return doc.data();
       });
-
-      console.log(gateUsed, gatesList);
       setGates(gatesList);
       setGateUsed(gateUsed);
     } catch (e) {
@@ -72,7 +67,6 @@ const Gates = () => {
   };
 
   const handleGateClick = (id) => {
-    console.log(gates, id);
     gates.forEach((gate) => {
       if (gate.gate == id) {
         console.log(gate);

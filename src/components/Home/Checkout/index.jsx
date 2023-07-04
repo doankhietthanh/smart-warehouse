@@ -130,7 +130,10 @@ const Checkout = (props) => {
       };
 
       setDoc(doc(storage, "history", time.toString()), dataStorage);
-      if (vehicle?.gate) deleteDoc(doc(storage, "gates", vehicle?.gate));
+      if (vehicle?.gate) {
+        deleteDoc(doc(storage, "gates", vehicle?.gate));
+        set(ref(database, `hardware/position/${vehicle?.gate}`), Number(0));
+      }
       setDoc(doc(storage, "vehicles", vehicle?.vehicleNumber), dataStorage);
       setTimeVehicleCheckout(formatTime(date.getTime()));
     } else {

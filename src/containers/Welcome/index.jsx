@@ -42,7 +42,6 @@ const Welcome = () => {
   };
 
   const onHanlerClearAllGate = async () => {
-    console.log("clear all gate");
     for (let i = 1; i <= 3; i++) {
       await deleteDoc(doc(storage, "gates", i.toString()))
         .then(() => {
@@ -59,6 +58,8 @@ const Welcome = () => {
             duration: 3,
           });
         });
+
+      await set(ref(database, `hardware/position/${i}`), Number(0));
     }
     set(ref(database, "gate/gateIsFull"), Number(0));
   };
