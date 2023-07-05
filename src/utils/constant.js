@@ -10,7 +10,7 @@ const ACTION_DB = {
 const STATUS_UPDATE_THRESHOLD = {
   NO_UPDATE: 0,
   WAITTING: 1,
-  UPDATED: 2,
+  UPDATED: 0,
 };
 
 const UNCHECKED_QR = 255;
