@@ -30,7 +30,6 @@ const Settings = () => {
   const [layout, setLayout] = useState("sensors_threshold");
 
   const hanlderClickMenu = (item) => {
-    console.log(item.key);
     setLayout(item.key);
   };
 
