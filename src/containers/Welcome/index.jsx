@@ -15,7 +15,7 @@ import {
 
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
-import { Button, notification } from "antd";
+import { Button, notification, message } from "antd";
 
 const Welcome = () => {
   const [vehicleList, setVehicleList] = useState([]);
@@ -59,7 +59,14 @@ const Welcome = () => {
             duration: 3,
           });
         });
+      await set(ref(database, `hardware/position/${i}`), Number(0));
     }
+    //delete all child in collection "history"
+    const historyRef = collection(storage, "history");
+    const historySnapshot = await getDocs(historyRef);
+    historySnapshot.docs.map(async (d) => {
+      await deleteDoc(doc(storage, "history", d.id));
+    });
     set(ref(database, "gate/gateIsFull"), Number(0));
   };
 

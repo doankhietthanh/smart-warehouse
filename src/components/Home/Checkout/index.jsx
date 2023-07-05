@@ -25,6 +25,7 @@ import { Table, Spin } from "antd";
 const Checkout = (props) => {
   const [loading, setLoading] = useState(true);
   const [readerQrCheckout, setReaderQrCheckout] = useState(null);
+  const [vehicleList, setVehicleList] = useState([]);
   const [imgCheckout, setImgCheckout] = useState(null);
   const [verified, setVerified] = useState(false);
   const [vehicleVerified, setVehicleVerified] = useState({});
@@ -32,6 +33,27 @@ const Checkout = (props) => {
   const [dataVehicleCheckout, setDataVehicleCheckout] = useState([]);
 
   const [messageError, setMessageError] = useState("");
+
+  useEffect(() => {
+    getVehicleListFromStorage();
+  }, []);
+
+  const getVehicleListFromStorage = async () => {
+    try {
+      const vehiclesRef = collection(storage, "vehicles");
+      const vehiclesSnapshot = await getDocs(vehiclesRef);
+      const vehiclesList = vehiclesSnapshot.docs.map((doc) => {
+        return doc.data();
+      });
+      setVehicleList(vehiclesList);
+    } catch (e) {
+      notification.error({
+        message: "Error",
+        description: `Firebase: ${e.message} Your project has exceeded no-cost limits. Please upgrade to ensure there is no service disruption.
+        `,
+      });
+    }
+  };
 
   useEffect(() => {
     getImageCheckoutFromDB();
@@ -90,9 +112,11 @@ const Checkout = (props) => {
   };
 
   const verifyVehicle = async (readerQr) => {
-    const vehicle = props.vehicleList.find(
+    const vehicle = vehicleList.find(
       (vehicle) => vehicle.vehicleNumber === readerQr
     );
+
+    console.log("vehicle checkout", vehicle);
 
     const gateRef = collection(storage, "gates");
     const gateSnapshot = await getDocs(gateRef);
@@ -130,34 +154,19 @@ const Checkout = (props) => {
       };
 
       setDoc(doc(storage, "history", time.toString()), dataStorage);
-      if (vehicle?.gate) deleteDoc(doc(storage, "gates", vehicle?.gate));
+      if (vehicle?.gate) {
+        deleteDoc(doc(storage, "gates", vehicle?.gate));
+        set(ref(database, `hardware/position/${vehicle?.gate}`), Number(0));
+      }
+      delete dataStorage.gate;
       setDoc(doc(storage, "vehicles", vehicle?.vehicleNumber), dataStorage);
       setTimeVehicleCheckout(formatTime(date.getTime()));
     } else {
       setVerified(false);
       set(ref(database, "checkout/gate/"), Number(UNCHECKED_QR));
       setMessageError("Vehicle not found");
+      setDataVehicleCheckout(null);
     }
-  };
-
-  const createFileFromBase64 = (base64String, fileName, fileType) => {
-    const byteCharacters = atob(base64String);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-      const slice = byteCharacters.slice(offset, offset + 512);
-      const byteNumbers = new Array(slice.length);
-
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: fileType });
-    return new File([blob], fileName, { type: fileType });
   };
 
   const readQRFromImage = async (base64Image) => {
