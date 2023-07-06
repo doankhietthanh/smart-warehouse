@@ -21,6 +21,7 @@ import jsQR from "jsqr";
 import { Image as ImageAntd, message } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Table, notification, Spin, Skeleton } from "antd";
+
 const Checkin = (props) => {
   const [loading, setLoading] = useState(true);
   const [readerQrCheckin, setReaderQrCheckin] = useState(null);
@@ -46,7 +47,7 @@ const Checkin = (props) => {
       if (counterVehicle > totalGate) {
         setMessageError("Gate is full");
         message.error("Gate is full");
-        // setLoading(true);
+        setLoading(true);
         setVerified(false);
       }
     });
@@ -213,12 +214,12 @@ const Checkin = (props) => {
 
     if (gates.length === 0) {
       for (let i = 1; i <= totalGate; i++) {
-        if (gateNumberProposed == i.toString()) continue;
+        // if (gateNumberProposed == i.toString()) continue;
         emptyList.push(i.toString());
       }
     } else {
       for (let i = 1; i <= totalGate; i++) {
-        if (gateNumberProposed == i.toString()) continue;
+        // if (gateNumberProposed == i.toString()) continue;
 
         if (!gates.includes(i.toString())) {
           emptyList.push(i.toString());
@@ -226,6 +227,8 @@ const Checkin = (props) => {
           setCounterVehicle((prev) => prev + 1);
         }
       }
+
+      console.log("emptyList", emptyList);
     }
 
     if (emptyList.length === 0) {

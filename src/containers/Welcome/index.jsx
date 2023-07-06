@@ -15,6 +15,7 @@ import {
 
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
+import { ACTION_DB } from "../../utils/constant";
 import { Button, notification, message } from "antd";
 
 const Welcome = () => {
@@ -67,6 +68,15 @@ const Welcome = () => {
       await deleteDoc(doc(storage, "history", d.id));
     });
     set(ref(database, "gate/gateIsFull"), Number(0));
+
+    //clear image
+    set(ref(database, "checkin/camera"), "");
+    set(ref(database, "checkout/camera"), "");
+
+    //clear hardware
+    set(ref(database, "action"), ACTION_DB.RESET_HARDWARE);
+
+    window.location.reload();
   };
 
   return (

@@ -5,6 +5,7 @@ const ACTION_DB = {
   OPEN_GATE: 3, // Control by check-in gate
   CLOSE_GATE: 4, // Control by check-out gate
   WIFI_SETUP: 5, //wifi setup
+  RESET_HARDWARE: 11, // Reset hardware
 };
 
 const STATUS_UPDATE_THRESHOLD = {

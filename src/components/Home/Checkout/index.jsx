@@ -71,9 +71,9 @@ const Checkout = (props) => {
     loadImageCheckout();
   }, [imgCheckout, readerQrCheckout, props.vehicleList]);
 
-  useEffect(() => {
-    verifyVehicle(readerQrCheckout);
-  }, [readerQrCheckout]);
+  // useEffect(() => {
+  //   verifyVehicle(readerQrCheckout);
+  // }, [readerQrCheckout]);
 
   useEffect(() => {
     setDataVehicleCheckout([
