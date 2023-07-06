@@ -54,7 +54,7 @@ const formatTime = (time) => {
   const minute = date.getMinutes();
   const second = date.getSeconds();
 
-  return `${day} ${month} ${year} ${hour}:${minute}:${second}`;
+  return `${day} ${month} ${year} ${hour}:${minute}`;
 };
 
 export {
