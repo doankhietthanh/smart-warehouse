@@ -72,7 +72,9 @@ const Welcome = () => {
     const vehicleRef = collection(storage, "vehicles");
     const vehicleSnapshot = await getDocs(vehicleRef);
     vehicleSnapshot.docs.map(async (d) => {
-      console.log(d.id);
+      // await deleteDoc(doc(storage, "vehicles", d.id, gate));c
+      // console.log(doc(storage, "vehicles", d.id, "gate"));
+      console.log(d.data());
     });
 
     set(ref(database, "gate/gateIsFull"), Number(0));
@@ -83,6 +85,8 @@ const Welcome = () => {
 
     //clear hardware
     set(ref(database, "action"), ACTION_DB.RESET_HARDWARE);
+
+    localStorage.removeItem("counterVehicle");
 
     // setTimeout(() => {
     //   window.location.reload();

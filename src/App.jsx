@@ -111,7 +111,7 @@ function App() {
         value: data?.currentValue,
         type: data?.type,
       });
-      sendAlertEmail(sensorName, data, formatTime(now * 1000));
+      // sendAlertEmail(sensorName, data, formatTime(now * 1000));
     } catch (e) {
       console.log(e);
     }

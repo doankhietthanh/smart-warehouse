@@ -124,6 +124,7 @@ const Checkin = (props) => {
       console.log("data entered: " + data);
       if (data === 1) {
         setCounterVehicle(counterVehicle + 1);
+        localStorage.setItem("counterVehicle", counterVehicle + 1);
         set(ref(database, "hardware/entered"), Number(0));
       }
     });
