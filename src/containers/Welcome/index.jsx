@@ -67,6 +67,14 @@ const Welcome = () => {
     historySnapshot.docs.map(async (d) => {
       await deleteDoc(doc(storage, "history", d.id));
     });
+
+    //delete all child in collection "history"
+    const vehicleRef = collection(storage, "vehicles");
+    const vehicleSnapshot = await getDocs(vehicleRef);
+    vehicleSnapshot.docs.map(async (d) => {
+      console.log(d.id);
+    });
+
     set(ref(database, "gate/gateIsFull"), Number(0));
 
     //clear image
@@ -76,9 +84,9 @@ const Welcome = () => {
     //clear hardware
     set(ref(database, "action"), ACTION_DB.RESET_HARDWARE);
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 3000);
   };
 
   return (

@@ -28,7 +28,7 @@ const COLUMS_TABLE_AT_HOME = [
   },
 ];
 
-const TIME_SEND_MAIL_MS = 1 * 60 * 1000;
+const TIME_SEND_MAIL_MS = 5 * 60 * 1000;
 
 const formatTime = (time) => {
   const months = [

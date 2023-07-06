@@ -40,12 +40,13 @@ const Checkin = (props) => {
   const [messageError, setMessageError] = useState("");
 
   useEffect(() => {
-    async () => await checkVehicleEntered();
+    checkVehicleEntered();
     onValue(ref(database, "gate/totalGate"), (snapshot) => {
       const totalGate = snapshot.val();
       setTotalGate(snapshot.val());
       console.log("TotalGate: " + totalGate, "Count: " + counterVehicle);
       if (counterVehicle > totalGate) {
+        console.log("Gate is full");
         setGateIsFull(true);
         setMessageError("Gate is full");
         set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
@@ -120,8 +121,10 @@ const Checkin = (props) => {
   const checkVehicleEntered = async () => {
     onValue(ref(database, "hardware/entered"), (snapshot) => {
       const data = snapshot.val();
+      console.log("data entered: " + data);
       if (data === 1) {
-        setCounterVehicle((prev) => prev + 1);
+        setCounterVehicle(counterVehicle + 1);
+        set(ref(database, "hardware/entered"), Number(0));
       }
     });
   };
