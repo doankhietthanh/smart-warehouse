@@ -245,11 +245,15 @@ const Checkout = (props) => {
         </div>
         <div>
           <span>Vehicle number: </span>
-          <span className="text-2xl font-bold">{readerQrCheckout}</span>
+          <span className="text-2xl font-bold">
+            {imgCheckout?.split("data:image/png;base64,")[1] != "" || verified
+              ? readerQrCheckout
+              : ""}
+          </span>
         </div>
       </div>
 
-      <div className="flex-1 flex justify-start items-center flex-col gap-10">
+      <div className="flex-1 flex justify-start items-center flex-col gap-10  min-w-[200px]">
         {verified ? (
           <div className="text-center flex gap-2">
             <CheckCircleFilled style={{ fontSize: "24px", color: "#4ABF78" }} />

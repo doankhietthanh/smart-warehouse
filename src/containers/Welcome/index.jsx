@@ -76,7 +76,9 @@ const Welcome = () => {
     //clear hardware
     set(ref(database, "action"), ACTION_DB.RESET_HARDWARE);
 
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   };
 
   return (

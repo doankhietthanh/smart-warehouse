@@ -28,6 +28,8 @@ const COLUMS_TABLE_AT_HOME = [
   },
 ];
 
+const TIME_SEND_MAIL_MS = 1 * 60 * 1000;
+
 const formatTime = (time) => {
   const months = [
     "Jan",
@@ -60,5 +62,6 @@ export {
   UNCHECKED_QR,
   COLUMS_TABLE_AT_HOME,
   STATUS_UPDATE_THRESHOLD,
+  TIME_SEND_MAIL_MS,
 };
 export { formatTime };

@@ -19,7 +19,7 @@ import {
   setDoc,
 } from "./services/firebase";
 import emailjs from "@emailjs/browser";
-import { formatTime } from "./utils/constant";
+import { formatTime, TIME_SEND_MAIL_MS } from "./utils/constant";
 
 function App() {
   const tokenStore = localStorage.getItem("token");
@@ -70,7 +70,11 @@ function App() {
   );
 
   useEffect(() => {
-    getAlertSensorFromDB();
+    const interval = setInterval(() => {
+      // console.log(1241241);
+      getAlertSensorFromDB();
+    }, TIME_SEND_MAIL_MS);
+    return () => clearInterval(interval);
   }, []);
 
   const getAlertSensorFromDB = async () => {

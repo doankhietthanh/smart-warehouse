@@ -34,6 +34,7 @@ const Checkin = (props) => {
   const [gateEmpty, setGateEmpty] = useState([]);
   const [gateProposed, setGateProposed] = useState(null);
   const [gateNumberProposed, setGateNumberProposed] = useState(0);
+  const [gateIsFull, setGateIsFull] = useState(false);
   const [counterVehicle, setCounterVehicle] = useState(0);
 
   const [messageError, setMessageError] = useState("");
@@ -45,10 +46,13 @@ const Checkin = (props) => {
       setTotalGate(snapshot.val());
       console.log("TotalGate: " + totalGate, "Count: " + counterVehicle);
       if (counterVehicle > totalGate) {
+        setGateIsFull(true);
         setMessageError("Gate is full");
-        message.error("Gate is full");
-        setLoading(true);
-        setVerified(false);
+        // message.error("Gate is full");
+        // setLoading(true);
+        // setVerified(false);
+      } else {
+        setGateIsFull(false);
       }
     });
   }, [counterVehicle]);
@@ -57,12 +61,10 @@ const Checkin = (props) => {
     onValue(ref(database, "hardware/position"), (snapshot) => {
       const data = snapshot.val();
       const gateAccpectedStatus = data[gateProposed?.gate];
+      const gateProposedTime = gateProposed?.time.toString();
 
       if (gateAccpectedStatus == 1) {
-        setDoc(
-          doc(storage, "history", gateProposed?.time.toString()),
-          gateProposed
-        );
+        setDoc(doc(storage, "history", gateProposedTime), gateProposed);
         setDoc(doc(storage, "gates", gateEmpty[0]?.toString()), gateProposed);
         setDoc(
           doc(storage, "vehicles", gateProposed?.vehicleNumber),
@@ -224,7 +226,7 @@ const Checkin = (props) => {
         if (!gates.includes(i.toString())) {
           emptyList.push(i.toString());
         } else {
-          setCounterVehicle((prev) => prev + 1);
+          // setCounterVehicle((prev) => prev + 1);
         }
       }
 
@@ -232,10 +234,12 @@ const Checkin = (props) => {
     }
 
     if (emptyList.length === 0) {
+      setGateIsFull(true);
       setMessageError("Gate is full");
       set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
       set(ref(database, "gate/gateIsFull"), Number(1));
     } else {
+      setGateIsFull(false);
       set(ref(database, "gate/gateIsFull"), Number(0));
     }
 
@@ -320,11 +324,15 @@ const Checkin = (props) => {
         </div>
         <div>
           <span>Vehicle number: </span>
-          <span className="text-2xl font-bold">{readerQrCheckin}</span>
+          <span className="text-2xl font-bold">
+            {imgCheckin?.split("data:image/png;base64,")[1] != "" || verified
+              ? readerQrCheckin
+              : ""}
+          </span>
         </div>
       </div>
 
-      <div className="flex-1 flex justify-start items-center flex-col gap-10">
+      <div className="flex-1 flex justify-start items-center flex-col gap-10 min-w-[200px]">
         {verified ? (
           <div className="text-center flex gap-2">
             <CheckCircleFilled style={{ fontSize: "24px", color: "#4ABF78" }} />
@@ -336,7 +344,7 @@ const Checkin = (props) => {
             <span className="text-xl">{messageError}</span>
           </div>
         )}
-        {loading ? (
+        {loading || gateIsFull ? (
           <Skeleton active />
         ) : (
           <Table
