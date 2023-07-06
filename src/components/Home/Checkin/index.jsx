@@ -48,6 +48,8 @@ const Checkin = (props) => {
       if (counterVehicle > totalGate) {
         setGateIsFull(true);
         setMessageError("Gate is full");
+        set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
+        set(ref(database, "gate/gateIsFull"), Number(1));
         // message.error("Gate is full");
         // setLoading(true);
         // setVerified(false);
@@ -234,10 +236,10 @@ const Checkin = (props) => {
     }
 
     if (emptyList.length === 0) {
-      setGateIsFull(true);
-      setMessageError("Gate is full");
-      set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
-      set(ref(database, "gate/gateIsFull"), Number(1));
+      // setGateIsFull(true);
+      // setMessageError("Gate is full");
+      // set(ref(database, "checkin/gate/"), Number(UNCHECKED_QR));
+      // set(ref(database, "gate/gateIsFull"), Number(1));
     } else {
       setGateIsFull(false);
       set(ref(database, "gate/gateIsFull"), Number(0));
