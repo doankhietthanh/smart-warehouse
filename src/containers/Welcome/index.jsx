@@ -11,11 +11,13 @@ import {
   setDoc,
   getDocs,
   collection,
+  updateDoc,
+  deleteField,
 } from "../../services/firebase";
 
 import Checkin from "../../components/Home/Checkin";
 import Checkout from "../../components/Home/Checkout";
-import { ACTION_DB } from "../../utils/constant";
+import { ACTION_DB, UNCHECKED_QR } from "../../utils/constant";
 import { Button, notification, message } from "antd";
 
 const Welcome = () => {
@@ -68,29 +70,33 @@ const Welcome = () => {
       await deleteDoc(doc(storage, "history", d.id));
     });
 
-    //delete all child in collection "history"
+    // delete all child in collection "vehicles"
     const vehicleRef = collection(storage, "vehicles");
     const vehicleSnapshot = await getDocs(vehicleRef);
     vehicleSnapshot.docs.map(async (d) => {
-      // await deleteDoc(doc(storage, "vehicles", d.id, gate));c
-      // console.log(doc(storage, "vehicles", d.id, "gate"));
-      console.log(d.data());
+      console.log(d.id);
+      await updateDoc(doc(storage, "vehicles", d.id), {
+        gate: deleteField(),
+      });
     });
 
     set(ref(database, "gate/gateIsFull"), Number(0));
 
     //clear image
     set(ref(database, "checkin/camera"), "");
+    set(ref(database, "checkin/gate"), UNCHECKED_QR);
+
     set(ref(database, "checkout/camera"), "");
+    set(ref(database, "checkout/gate"), UNCHECKED_QR);
 
     //clear hardware
     set(ref(database, "action"), ACTION_DB.RESET_HARDWARE);
 
     localStorage.removeItem("counterVehicle");
 
-    // setTimeout(() => {
-    //   window.location.reload();
-    // }, 3000);
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   };
 
   return (

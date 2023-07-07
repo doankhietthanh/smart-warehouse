@@ -62,7 +62,7 @@ const Checkout = (props) => {
       try {
         const result = await readQRFromImage(imgCheckout);
         setReaderQrCheckout(result);
-        verifyVehicle(result);
+        await verifyVehicle(result);
       } catch (error) {
         console.error(error);
       }
@@ -112,6 +112,7 @@ const Checkout = (props) => {
   };
 
   const verifyVehicle = async (readerQr) => {
+    console.log("vehicleList", vehicleList);
     const vehicle = vehicleList.find(
       (vehicle) => vehicle.vehicleNumber === readerQr
     );
@@ -124,9 +125,16 @@ const Checkout = (props) => {
       return doc.data();
     });
 
+    console.log("gateCheckout: ", gateList);
+
     const gateListCheckAgain = gateList.find(
       (gate) => gate?.vehicleNumber === vehicle?.vehicleNumber
     );
+
+    if (gateListCheckAgain) {
+      const gateChecked = gateListCheckAgain?.gate;
+      vehicle.gate = gateChecked;
+    }
 
     if (vehicle) {
       setLoading(false);
@@ -137,6 +145,8 @@ const Checkout = (props) => {
         setMessageError("Vehicle are not checkin");
         return;
       }
+
+      console.log(vehicle);
 
       setVerified(true);
       setVehicleVerified(vehicle);

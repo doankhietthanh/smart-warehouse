@@ -66,6 +66,8 @@ const Checkin = (props) => {
       const gateAccpectedStatus = data[gateProposed?.gate];
       const gateProposedTime = gateProposed?.time.toString();
 
+      console.log(gateProposed);
+
       if (gateAccpectedStatus == 1) {
         setDoc(doc(storage, "history", gateProposedTime), gateProposed);
         setDoc(doc(storage, "gates", gateEmpty[0]?.toString()), gateProposed);
@@ -84,7 +86,7 @@ const Checkin = (props) => {
       try {
         const result = await readQRFromImage(imgCheckin);
         setReaderQrCheckin(result);
-        verifyVehicle(result);
+        await verifyVehicle(result);
       } catch (error) {
         console.error(error);
       }
